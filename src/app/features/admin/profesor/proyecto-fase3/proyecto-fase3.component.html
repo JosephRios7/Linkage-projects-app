@@ -1,0 +1,65 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+    <div class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Formatos de cierre de proyectos</h2>
+      <form>
+        <!-- Resumen del Proyecto -->
+        <div class="mb-6">
+          <label class="block text-lg font-medium text-gray-700">Ingrese el resumen del Proyecto</label>
+          <textarea
+            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Escribe el resumen del proyecto"
+            rows="6"
+            required
+          ></textarea>
+        </div>
+  
+        <!-- Subir Archivos -->
+        <div class="mb-6">
+          <label class="block text-lg font-medium text-gray-700">Subir todos los archivos relacionado a esta fase</label>
+          <div
+            id="dropzone"
+            class="flex flex-col items-center justify-center w-full h-32 mt-2 border-2 border-dashed border-gray-300 rounded-lg bg-gray-100 hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer"
+            onclick="document.getElementById('fileInput').click()"
+          >
+            <p class="text-gray-500 text-center">Haz clic o arrastra archivos a esta área para subirlos</p>
+            <p class="text-sm text-gray-500 mt-1">Formatos aceptados: PDF, DOC, DOCX</p>
+            <input
+              type="file"
+              id="fileInput"
+              name="documento[]"
+              class="hidden"
+              accept=".pdf, .doc, .docx"
+              multiple
+              onchange="handleFileInput(event)"
+            />
+          </div>
+          <ul id="fileList" class="mt-4 space-y-2"></ul>
+        </div>
+  
+        <!-- Botón Guardar -->
+        <div class="text-right">
+          <button
+            type="submit"
+            class="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Guardar Resumen
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // Función para manejar archivos subidos
+    function handleFileInput(event) {
+      const fileList = event.target.files;
+      const list = document.getElementById('fileList');
+      list.innerHTML = '';
+      Array.from(fileList).forEach((file) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = file.name;
+        listItem.classList.add('text-gray-700', 'text-sm');
+        list.appendChild(listItem);
+      });
+    }
+  </script>

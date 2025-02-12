@@ -1,0 +1,123 @@
+<header>
+  <div>
+    <img
+      src="https://univercimas.com/wp-content/uploads/2021/02/Logo-universidad-de-bolivar.png"
+      alt="Vinculación"
+      class="logo"
+    />
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#cuadros">Inicio</a></li>
+      <li><a href="#programas">Programas</a></li>
+      <li><a href="#">Galería</a></li>
+      <li><a href="#">Noticias</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section id="cuadros" class="contenedor">
+  <div class="cuadro" id="cuadro1">
+    <div class="contenido">
+      <p>Vinculación</p>
+      <button class="button2" (click)="navigateToLogin()">Acceder</button>
+    </div>
+  </div>
+  <div class="cuadro" id="cuadro2">
+    <div class="contenido">
+      <p>Investigación</p>
+      <button class="button2" (click)="navigateToLogin()">Acceder</button>
+    </div>
+  </div>
+  <div class="cuadro" id="cuadro3">
+    <div class="contenido">
+      <p>Laboratorio</p>
+      <button class="button2" (click)="navigateToLogin()">Acceder</button>
+    </div>
+  </div>
+  <div class="cuadro" id="cuadro4">
+    <div class="contenido">
+      <p>Prácticas</p>
+      <button class="button2" (click)="navigateToLogin()">Acceder</button>
+    </div>
+  </div>
+</section>
+
+<section id="inicio">
+  <div>
+    <h1>Vinculación con la Sociedad</h1>
+    <p>
+      La vinculación como eje fundamental del quehacer universitario, <br />
+      se concreta a través de programas y proyectos de profundo contenido
+      académico y social. <br />
+      Basamos nuestro ejercicio en la pertinencia social, ambiental y cultural a
+      partir de una planificación <br />
+      que incorpora nuestros objetivos académicos con las necesidades sociales
+      evidenciadas.
+    </p>
+    <button>Acceder</button>
+  </div>
+  <div>
+    <img
+      src="https://www.ueb.edu.ec/images/vicerrectorado-investigacion/vinculacion/vinc1.jpg"
+      alt="Vinculación"
+    />
+  </div>
+</section>
+
+<section id="programas" class="hero2">
+  <div class="hero2-content">
+    <div class="hero2-image">
+      <img
+        src="https://www.ueb.edu.ec/images/vicerrectorado-investigacion/laboratorios/lab-1.png"
+        alt="Photographer"
+      />
+    </div>
+    <div class="hero2-text">
+      <p class="subtitle">Departamento de</p>
+      <h1>Investigación</h1>
+      <p>
+        La Universidad Estatal de Bolívar, ha fortalecido en los últimos años su
+        sistema de investigación a través de la inversión en infraestructura...
+      </p>
+      <button class="hero2-button">Acceder</button>
+    </div>
+  </div>
+</section>
+
+<div class="carousel">
+    <!-- Contenedor de las diapositivas -->
+    <div
+      class="slides"
+      [ngStyle]="{ transform: 'translateX(-' + currentSlide * 100 + '%)' }"
+    >
+      <div class="slide" *ngFor="let image of sliderImages">
+        <img [src]="image" alt="Carrusel Imagen" />
+      </div>
+    </div>
+  
+    <!-- Botones de navegación -->
+    <button class="prev" (click)="prevSlide()">‹</button>
+    <button class="next" (click)="nextSlide()">›</button>
+  </div>
+  
+  
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-logo">
+      <img
+        src="https://univercimas.com/wp-content/uploads/2021/02/Logo-universidad-de-bolivar.png"
+        alt="Universidad de Bolívar"
+      />
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Universidad de Bolívar. Todos los derechos reservados.</p>
+      <ul>
+        <li><a href="#contacto">Contacto</a></li>
+        <li><a href="#privacy-policy">Política de Privacidad</a></li>
+        <li><a href="#terms">Términos y Condiciones</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

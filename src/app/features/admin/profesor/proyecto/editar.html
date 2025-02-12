@@ -1,0 +1,134 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { ConvocatoriaService } from '../../../../services/Convocatoria/convocatoria.service';
+import { NavigationStateService } from '../../../../services/navigation-state.service';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-proyecto',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './proyecto.component.html',
+  styleUrls: ['./proyecto.component.css'],
+})
+export class ProyectoComponent implements OnInit, OnDestroy {
+  projectForm: FormGroup;
+  archivos: File[] = [];
+  convocatoriaId: string | null = null;
+  estadoProyecto: string = 'enviado'; // 🔹 Estado inicial
+
+  constructor(
+    private fb: FormBuilder,
+    private convocatoriaService: ConvocatoriaService,
+    private route: ActivatedRoute,
+    private navigationStateService: NavigationStateService
+  ) {
+    this.projectForm = this.fb.group({
+      convocatoria_id: ['', Validators.required],
+      nombre: ['', Validators.required],
+      dominio: ['', Validators.required],
+      fase: ['', Validators.required],
+      docente_coordinador: this.fb.group({
+        nombre: ['', Validators.required],
+        apellido: ['', Validators.required],
+        cedula: ['', Validators.required],
+        telefono: ['', Validators.required],
+        correo: ['', [Validators.required, Validators.email]],
+      }),
+      institucion_beneficiaria: ['', Validators.required],
+      canton: ['', Validators.required],
+      parroquia: ['', Validators.required],
+      oferta_academica: ['', Validators.required],
+      facultad: ['', Validators.required],
+      carrera: ['', Validators.required],
+      modalidad: ['', Validators.required],
+      estudiantes: this.fb.array([]),
+    });
+  }
+
+  ngOnInit(): void {
+    // Obtener el ID de la convocatoria desde la URL
+    this.convocatoriaId = this.route.snapshot.paramMap.get('id');
+    if (this.convocatoriaId) {
+      this.projectForm.patchValue({ convocatoria_id: this.convocatoriaId });
+      this.navigationStateService.setConvocatoriaId(this.convocatoriaId);
+
+      // 🔹 Obtener el estado del proyecto desde el backend
+      this.obtenerEstadoProyecto();
+    }
+    this.agregarEstudiante();
+  }
+
+  ngOnDestroy(): void {
+    this.navigationStateService.setConvocatoriaId(null);
+  }
+
+  obtenerEstadoProyecto(): void {
+    // 🔹 Llamada al backend para obtener el estado actual del proyecto
+    this.convocatoriaService.obtenerEstadoProyecto(this.convocatoriaId!)
+      .subscribe({
+        next: (response) => {
+          this.estadoProyecto = response.estado;
+        },
+        error: (err) => {
+          console.error('Error al obtener estado del proyecto:', err);
+        },
+      });
+  }
+
+  get estudiantes(): FormArray {
+    return this.projectForm.get('estudiantes') as FormArray;
+  }
+
+  agregarEstudiante(): void {
+    const estudianteForm = this.fb.group({
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      cedula: ['', Validators.required],
+      genero: ['', Validators.required],
+      correo: ['', [Validators.required, Validators.email]],
+    });
+    this.estudiantes.push(estudianteForm);
+  }
+
+  eliminarEstudiante(index: number): void {
+    this.estudiantes.removeAt(index);
+  }
+
+  onSubmit(): void {
+    if (this.projectForm.invalid) {
+      this.projectForm.markAllAsTouched();
+      this.mostrarToast('❌ Formulario inválido. Revisa los campos.', false);
+      return;
+    }
+
+    const formData = new FormData();
+    Object.keys(this.projectForm.value).forEach(key => {
+      formData.append(key, this.projectForm.value[key]);
+    });
+
+    this.archivos.forEach(file => formData.append('archivos[]', file));
+
+    this.convocatoriaService.crearProyecto(formData).subscribe({
+      next: () => {
+        this.mostrarToast('✅ Proyecto registrado exitosamente.', true);
+        this.estadoProyecto = 'en_revision'; // 🔹 Actualizar el estado localmente
+        this.projectForm.reset(); // Resetear el formulario
+      },
+      error: () => {
+        this.mostrarToast('❌ Error al registrar el proyecto.', false);
+      },
+    });
+  }
+
+  mostrarToast(mensaje: string, exito: boolean): void {
+    this.enviadoCorrectamente = exito;
+    this.toastMessage = mensaje;
+    this.showToast = true;
+
+    setTimeout(() => {
+      this.showToast = false;
+    }, 3000);
+  }
+}

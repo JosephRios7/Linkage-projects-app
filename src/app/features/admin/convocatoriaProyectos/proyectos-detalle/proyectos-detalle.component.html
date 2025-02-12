@@ -1,0 +1,176 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
+    {{ proyecto?.nombre }}
+  </h1>
+
+  <div *ngIf="proyecto" class="space-y-8">
+    <!-- Detalles generales del proyecto -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">
+        Detalles del Proyecto
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
+        <p><strong>Dominio:</strong> {{ proyecto?.dominio }}</p>
+        <p><strong>Fase:</strong> {{ proyecto?.fase }}</p>
+        <p>
+          <strong>Institución Beneficiaria:</strong>
+          {{ proyecto?.institucion_beneficiaria }}
+        </p>
+        <p><strong>Cantón:</strong> {{ proyecto?.canton }}</p>
+        <p><strong>Parroquia:</strong> {{ proyecto?.parroquia }}</p>
+        <p>
+          <strong>Oferta Académica:</strong> {{ proyecto?.oferta_academica }}
+        </p>
+        <p><strong>Facultad:</strong> {{ proyecto?.facultad }}</p>
+        <p><strong>Carrera:</strong> {{ proyecto?.carrera }}</p>
+        <p><strong>Modalidad:</strong> {{ proyecto?.modalidad }}</p>
+      </div>
+    </div>
+    
+    <!-- Docente Coordinador -->
+    <div *ngIf="docenteCoordinador" class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">Docente Coordinador</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
+        <!-- Utilizamos la propiedad "detalles" para mostrar los datos del docente -->
+        <p><strong>Nombre:</strong> {{ docenteCoordinador.detalles?.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ docenteCoordinador.detalles?.apellido }}</p>
+        <p><strong>Cédula:</strong> {{ docenteCoordinador.detalles?.cedula }}</p>
+        <p><strong>Correo:</strong> {{ docenteCoordinador.detalles?.correo }}</p>
+        <p><strong>Teléfono:</strong> {{ docenteCoordinador.detalles?.telefono }}</p>
+      </div>
+    </div>
+
+    <!-- Estudiantes -->
+    <div *ngIf="estudiantes?.length" class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">Estudiantes</h2>
+      <ul class="space-y-4">
+        <li
+          *ngFor="let estudiante of estudiantes"
+          class="border rounded-lg p-4 bg-gray-50 shadow-sm"
+        >
+          <!-- Mostramos los datos obtenidos en "detalles" para cada estudiante -->
+          <p><strong>Nombre:</strong> {{ estudiante.detalles?.nombre }}</p>
+          <p><strong>Apellido:</strong> {{ estudiante.detalles?.apellido }}</p>
+          <p><strong>Cédula:</strong> {{ estudiante.detalles?.cedula }}</p>
+          <p><strong>Género:</strong> {{ estudiante.detalles?.genero }}</p>
+          <p><strong>Correo:</strong> {{ estudiante.detalles?.correo }}</p>
+        </li>
+      </ul>
+    </div>
+
+
+    <!-- Documentos -->
+    <!-- <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">Documentos</h2>
+
+      <div
+      *ngIf="proyecto.archivos && proyecto.archivos.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4"
+    >
+      <div
+        *ngFor="let archivo of proyecto.archivos"
+        class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
+      >
+        <div class="flex justify-center mb-1">
+          <div
+            class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
+          >
+            <ng-container
+              *ngIf="
+                archivo['mime_type'] && archivo['mime_type'].includes('pdf');
+                else otherIcon
+              "
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+                alt="PDF Icon"
+                class="w-7 h-7"
+              />
+            </ng-container>
+            <ng-template #otherIcon>
+              <img
+                src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+                alt="Document Icon"
+                class="w-9 h-9"
+              />
+            </ng-template>
+          </div>
+        </div>
+        <h3 class="font-semibold mb-2 text-center flex-1">
+          {{ archivo.titulo }}
+        </h3>
+        <button
+        (click)="descargarArchivoProyecto(archivo.id!)"
+        class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+      >
+        Descargar
+      </button>
+      </div>
+    </div>
+    </div> -->
+    
+<!-- Documentos: Agrupados por Fase -->
+<div class="bg-white shadow rounded-lg p-6">
+  <h2 class="text-2xl font-semibold mb-4 text-gray-700">Documentos por Fase</h2>
+
+  <!-- Verificar si hay al menos un grupo de archivos -->
+  <div *ngIf="proyecto.archivos && proyecto.archivos.length > 0; else sinArchivos">
+    
+    <!-- Obtenemos las claves (nombres de fase) del objeto archivosPorFase -->
+    <div *ngFor="let nombreFase of getFaseNombres()">
+      <h3 class="font-bold text-lg mb-2 text-blue-700">{{ nombreFase }}</h3>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4"
+      >
+        <div
+          *ngFor="let archivo of archivosPorFase[nombreFase]"
+          class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
+        >
+          <div class="flex justify-center mb-1">
+            <div class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center">
+              <ng-container *ngIf="archivo['mime_type'] && archivo['mime_type'].includes('pdf'); else otherIcon">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+                  alt="PDF Icon"
+                  class="w-7 h-7"
+                />
+              </ng-container>
+              <ng-template #otherIcon>
+                <img
+                  src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+                  alt="Document Icon"
+                  class="w-9 h-9"
+                />
+              </ng-template>
+            </div>
+          </div>
+          <h3 class="font-semibold mb-0 text-center flex-1">
+            {{ archivo.titulo }}
+          </h3>
+                <p class="text-gray-500 text-sm mt-0">Subido: {{ archivo.created_at | date:'short' }}</p>
+
+          <button
+            (click)="descargarArchivoProyecto(archivo.id!)"
+            class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+          >
+            Descargar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Texto alternativo si no hay archivos -->
+  <ng-template #sinArchivos>
+    <p class="text-gray-500">
+      No hay archivos cargados para este proyecto.
+    </p>
+  </ng-template>
+</div>
+
+    <div *ngIf="!proyecto" class="text-gray-500 text-center mt-8">
+      Cargando detalles del proyecto...
+    </div>
+  </div>
+</div>

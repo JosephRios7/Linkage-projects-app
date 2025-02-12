@@ -1,0 +1,296 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+  <!-- Barra de búsqueda -->
+  <div class="flex items-center space-x-4 mb-6">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Buscar convocatoria..."
+      class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+    />
+    <button
+      (click)="onSearch()"
+      class="px-4 py-2 bg-[#0B283F] text-white font-semibold rounded-lg shadow-md hover:bg-[#15415E] focus:outline-none focus:ring focus:ring-blue-300"
+    >
+      Buscar
+    </button>
+  </div>
+
+  <!-- Lista de tarjetas de convocatorias -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div
+      *ngFor="let convocatoria of convocatorias"
+      class="bg-white border border-[#0B283F] rounded-lg shadow p-4 flex flex-col justify-between"
+    >
+      <!-- Contenido de la tarjeta -->
+      <div>
+        <div class="flex justify-between items-start">
+          <a
+            [routerLink]="['/panel/convocatorias/proyectos', convocatoria.id]"
+            class="hover:underline block w-full text-ellipsis overflow-hidden"
+          >
+            {{ convocatoria.titulo }}
+          </a>
+          <span
+            class="inline-block px-3 py-1 rounded-full text-sm font-medium"
+            [ngClass]="{
+              'bg-green-100 text-green-800':
+                convocatoria.estado === 'Publicado',
+              'bg-yellow-100 text-yellow-800':
+                convocatoria.estado === 'Borrador',
+              'bg-red-500 text-white': convocatoria.estado === 'Finalizado'
+            }"
+          >
+            {{ convocatoria.estado }}
+          </span>
+        </div>
+
+        <p class="text-gray-600 mb-4">{{ convocatoria.descripcion }}</p>
+        <div class="text-sm text-gray-500 mb-2">
+          <p><strong>Inicio:</strong> {{ convocatoria.fecha_inicio }}</p>
+          <p><strong>Fin:</strong> {{ convocatoria.fecha_fin }}</p>
+        </div>
+        <div>
+          <!-- <button
+            (click)="abrirModal(convocatoria.archivos)"
+            class="px-4 py-2 bg-[#0B283F] text-white font-semibold rounded-lg hover:bg-[#15415E]"
+          >
+            Ver Documentos
+          </button> -->
+          <!-- Botón para ver documentos de la convocatoria actual -->
+          <button
+            (click)="abrirModalConvocatoria(convocatoria)"
+            class="px-4 py-2 bg-[#0B283F] text-white font-semibold rounded-lg hover:bg-[#15415E]"
+          >
+            Ver Documentos
+          </button>
+        </div>
+      </div>
+
+      <!-- Acciones de la tarjeta -->
+      <div class="flex justify-between items-center mt-4">
+        <div class="flex space-x-2">
+          <!-- Botón Editar -->
+          <button
+            *ngIf="convocatoria.estado === 'Borrador'"
+            class="px-2 py-1 bg-yellow-400 text-black rounded hover:bg-yellow-500"
+            [routerLink]="['/panel/convocatorias/editar', convocatoria.id]"
+          >
+            Editar
+          </button>
+
+          <!-- Botón Publicar -->
+          <button
+            *ngIf="convocatoria.estado === 'Borrador'"
+            (click)="confirmarAccion('Publicar', convocatoria.id)"
+            class="px-2 py-1 bg-[#0B283F] text-white rounded hover:bg-[#15415E]"
+          >
+            Publicar
+          </button>
+          <!-- Botón finalizar -->
+          <button
+            *ngIf="
+              convocatoria.estado === 'Publicado' &&
+              convertToDate(convocatoria.fecha_fin) <= today
+            "
+            (click)="confirmarAccion('Finalizar', convocatoria.id)"
+            class="px-2 py-1 bg-[#0B283F] text-white rounded hover:bg-[#15415E]"
+          >
+            Finalizar
+          </button>
+
+          <!-- Botón Eliminar -->
+          <button
+            *ngIf="
+              convocatoria.estado !== 'Publicado' &&
+              convocatoria.estado !== 'Finalizado'
+            "
+            (click)="confirmarAccion('Eliminar', convocatoria.id)"
+            class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <div class="flex justify-between items-center mt-6">
+    <button
+      (click)="onPageChange(currentPage - 1)"
+      [disabled]="currentPage === 1"
+      class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-300 disabled:opacity-50"
+    >
+      Anterior
+    </button>
+    <span class="text-gray-700"
+      >Página {{ currentPage }} de {{ totalPages }}</span
+    >
+    <button
+      (click)="onPageChange(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+      class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-300 disabled:opacity-50"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>
+
+
+<!-- Modal de Documentos -->
+<div
+  *ngIf="mostrarModal"
+  class="fixed inset-0 bg-gray-800 bg-opacity-50 flex flex-col items-center justify-center z-50"
+>
+  <div class="bg-white rounded-lg shadow-lg w-3/4 max-h-screen overflow-auto">
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-lg font-semibold">Documentos Relacionados</h2>
+      <button (click)="cerrarModal()" class="text-gray-500 hover:text-gray-700">
+        &times;
+      </button>
+    </div>
+    <div class="p-4">
+      <!-- Sección de archivos de convocatoria -->
+      <h3 class="font-bold mb-2 text-center">Documentos de Convocatoria</h3>
+      <table class="min-w-full divide-y divide-gray-200 mb-4 bg-gray-100">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 w-[50%] bg-gray-200">Nombre de documento</th>
+            <th class="px-4 py-2 w-[50%] bg-gray-200">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let archivo of archivosConvocatoria">
+            <td class="px-4 py-2">{{ archivo.titulo }}</td>
+            <td class="px-4 py-2 flex space-x-2 justify-center">
+              <button
+                (click)="descargarArchivoConv(archivo.id)"
+                class="px-2 py-1 bg-green-600 text-white rounded"
+              >
+                Descargar
+              </button>
+              <button
+                (click)="
+                  confirmarAccionArchivo('Eliminar', 'convocatoria', archivo)
+                "
+                class="px-2 py-1 bg-red-600 text-white rounded"
+              >
+                Eliminar
+              </button>
+              <button
+                (click)="
+                  confirmarAccionArchivo('Subir', 'convocatoria', archivo)
+                "
+                class="px-2 py-1 bg-blue-600 text-white rounded"
+              >
+                Subir Nuevo
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Sección para cada fase -->
+      <div *ngFor="let fase of fases">
+        <h3 class="font-bold mb-2 text-center">Fase: {{ fase.nombre }}</h3>
+        <table class="min-w-full divide-y divide-gray-200 mb-4 bg-gray-100">
+          <thead>
+            <tr>
+              <th class="px-4 py-2 w-[50%] bg-gray-200">Nombre de documento</th>
+              <th class="px-4 py-2 w-[50%] bg-gray-200">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let archivo of fase.archivos">
+              <td class="px-4 py-2">{{ archivo.titulo }}</td>
+              <td class="px-4 py-2 flex space-x-2 justify-center">
+                <button
+                  (click)="descargarArchivoFase(archivo.id)"
+                  class="px-2 py-1 bg-green-600 text-white rounded"
+                >
+                  Descargar
+                </button>
+                <button
+                *ngIf="fase.archivos.length > 1"
+                  (click)="confirmarAccionArchivo('Eliminar', 'fase', archivo)"
+                  class="px-2 py-1 bg-red-600 text-white rounded"
+                >
+                  Eliminar
+                </button>
+                <button
+                  (click)="confirmarAccionArchivo('Subir', 'fase', archivo)"
+                  class="px-2 py-1 bg-blue-600 text-white rounded"
+                >
+                  Subir Nuevo
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Modal de Confirmación para Archivos -->
+      <div
+        *ngIf="mostrarConfirmacionArchivo"
+        class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-60"
+      >
+        <div
+          class="bg-white rounded-lg shadow-lg w-1/3 border border-[#0B283F]"
+        >
+          <div class="p-4">
+            <p class="text-lg text-gray-800">
+              {{ mensajeConfirmacionArchivo }}
+            </p>
+          </div>
+          <div class="flex justify-end space-x-4 p-4 border-t">
+            <button
+              (click)="cancelarConfirmacionArchivo()"
+              class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+            >
+              Cancelar
+            </button>
+            <button
+              (click)="ejecutarAccionArchivoConfirmada()"
+              class="px-4 py-2 bg-[#0B283F] text-white rounded hover:bg-[#15415E]"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end p-4 border-t">
+      <button
+        (click)="cerrarModal()"
+        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div
+  *ngIf="mostrarConfirmacion"
+  class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white rounded-lg shadow-lg w-1/3 border border-[#0B283F]">
+    <div class="p-4">
+      <p class="text-lg text-gray-800">{{ mensajeConfirmacion }}</p>
+    </div>
+    <div class="flex justify-end space-x-4 p-4 border-t">
+      <button
+        (click)="cancelarConfirmacion()"
+        class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="ejecutarAccionConfirmada()"
+        class="px-4 py-2 bg-[#0B283F] text-white rounded hover:bg-[#15415E]"
+      >
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>

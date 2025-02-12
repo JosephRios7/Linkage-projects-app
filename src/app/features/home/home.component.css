@@ -1,0 +1,416 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Header */
+header {
+    border-radius: 10px;
+    position: sticky;
+    top: 0;
+    /* El menú estará fijo en la parte superior */
+    z-index: 1000;
+    /* Asegura que el menú quede sobre otros elementos */
+    background-color: #0b283f;
+    /* Color de fondo del menú */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    /* Sombra para resaltar */
+}
+
+header .logo {
+    height: 94px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+nav ul {
+    display: flex;
+    gap: 20px;
+    /* Espaciado entre los enlaces */
+    list-style: none;
+}
+
+nav ul li {
+    position: relative;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px 15px;
+    display: inline-block;
+}
+
+nav a:hover {
+    background-color: #fafafa;
+    border-radius: 5px;
+    color: #0b283f;
+}
+
+
+/* Section - Cuadros */
+/* Contenedor para los cuadros */
+.contenedor {
+
+    justify-content: space-between;
+
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    /* Los cuadros estarán alineados horizontalmente */
+    gap: 20px;
+    /* Espacio entre los cuadros */
+    width: 100%;
+    /* Tamaño máximo para los cuadros */
+    justify-content: center;
+    /* Alinea los cuadros al centro en pantallas grandes */
+}
+
+/* Estilos para cada cuadro */
+.cuadro {
+    background-color: #333;
+    /* Fondo oscuro por defecto */
+    color: rgb(0, 0, 0);
+    /* Color del texto */
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    /* El texto y el botón estarán en una columna */
+    align-items: center;
+    justify-content: space-between;
+    height: 500px;
+    /* Altura de cada cuadro */
+    flex: 1;
+    /* Hace que los cuadros se expandan de manera igual */
+    transition: transform 0.3s ease;
+    /* Animación para cuando se pase el ratón */
+    background-size: cover;
+    /* Hace que la imagen cubra todo el cuadro */
+    background-position: center;
+    /* Centra la imagen dentro del cuadro */
+}
+.cuadro p {
+    font-size: 20px;
+    margin-bottom: 20px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 30px;
+    padding: 20px;
+    width: 100%; /* Hace que el fondo ocupe todo el ancho disponible del cuadro */
+    text-align: center; /* Centra el texto dentro del párrafo */
+    color: rgb(0, 0, 0); /* Color del texto */
+  }
+
+/* Efecto hover en el cuadro */
+.cuadro:hover {
+    transform: scale(1.05);
+    /* Efecto de escala al pasar el ratón */
+}
+
+/* Estilos para el botón */
+.button2 {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    margin-top: 300px;
+    /* Espacio por encima del botón */
+}
+
+
+.button2:hover {
+    background-color: #0056b3;
+    /* Cambio de color en hover */
+}
+
+/* Imagen específica para el cuadro 1 */
+#cuadro1 {
+    background-image: url('https://recla.org/wp-content/uploads/2024/03/Estrategias-ganadoras-para-vincular-universidades-y-empresas-5.webp');
+}
+
+/* Imagen específica para el cuadro 2 */
+#cuadro2 {
+    background-image: url('https://d5tnfl9agh5vb.cloudfront.net/uploads/2018/02/upn_blog_est-gen_metodolog-investig_23-feb.jpg');
+}
+
+/* Imagen específica para el cuadro 3 */
+#cuadro3 {
+    background-image: url('https://noticias.utpl.edu.ec/sites/default/files/imagenes_editor/quimicautplmaestria_0.jpeg');
+}
+
+/* Imagen específica para el cuadro 4 */
+#cuadro4 {
+    background-image: url('https://previews.123rf.com/images/thingass/thingass1402/thingass140200025/25793758-la-palabra-pr%C3%A1ctica-en-letras-recortadas-de-revistas-clavado-en-un-tabl%C3%B3n-de-corcho.jpg');
+}
+
+/* Section - Inicio */
+/* Estilo para la sección */
+#inicio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px 40px;
+    background: linear-gradient(to right, #0093e9, #80d0c7); /* Gradiente de fondo */
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    gap: 40px;
+    height: 100vh;
+  }
+  
+  /* Contenedor de texto */
+  #inicio div:first-child {
+    flex: 1;
+    color: #fff;
+  }
+  
+  #inicio h1 {
+    font-size: 48px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Sombra sutil para darle profundidad */
+  }
+  
+  #inicio p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Estilo del botón */
+  #inicio button {
+    padding: 12px 30px;
+    background-color: #f4b400;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+  }
+  
+  /* Efecto hover del botón */
+  
+  
+  /* Contenedor de imagen */
+  #inicio div:last-child {
+    flex: 1;
+  }
+  
+  #inicio img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Sombra suave para la imagen */
+    object-fit: cover;
+  }
+
+  /* Estilo para la sección principal */
+.hero2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    background-color: #f4f6f9; /* Fondo suave */
+    padding: 0 20px; /* Espaciado horizontal */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Contenedor principal */
+  .hero2-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px; /* Máximo ancho */
+    width: 100%;
+    gap: 40px; /* Espaciado entre la imagen y el texto */
+  }
+  
+  /* Imagen */
+  .hero2-image img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 15px;
+    object-fit: cover;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  /* Efecto al pasar el mouse sobre la imagen */
+  .hero2-image img:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Texto */
+  .hero2-text {
+    max-width: 600px;
+    text-align: left;
+    color: #333; /* Color de texto oscuro */
+  }
+  
+  .hero2-text .subtitle {
+    font-size: 14px;
+    color: #888; /* Subtítulo gris */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  
+  .hero2-text h1 {
+    font-size: 40px;
+    font-weight: bold;
+    color: #2d3748; /* Color principal del título */
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  
+  .hero2-text p {
+    font-size: 16px;
+    color: #555; /* Color gris claro para el párrafo */
+    line-height: 1.8;
+    margin-bottom: 20px;
+    text-align: justify; /* Alineación justificada para párrafos */
+  }
+  
+  /* Botón */
+  .hero2-button {
+    background-color: #f4b400;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(255, 182, 50, 0.3);
+  }
+  
+  .hero2-button:hover {
+    background-color: #d59500;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 182, 50, 0.5);
+  }
+
+    /* Section - slider */
+/* Contenedor del carrusel */
+.carousel {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Contenedor de las diapositivas */
+  .slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  /* Diapositiva individual */
+  .slide {
+    min-width: 100%;
+    text-align: center;
+    background-color: #f4f4f4;
+  }
+  
+  .slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* Botones de navegación */
+  button.prev,
+  button.next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 50%;
+    z-index: 1000;
+  }
+  
+  button.prev {
+    left: 10px;
+  }
+  
+  button.next {
+    right: 10px;
+  }
+  
+  button.prev:hover,
+  button.next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  /* Ajustar imágenes para que tengan el mismo tamaño */
+  .slide img {
+    width: 100%; /* Las imágenes ocuparán todo el ancho del carrusel */
+    height: 500px; /* Altura fija para todas las imágenes */
+    object-fit: cover; /* Ajusta la imagen sin deformarla */
+    display: block;
+  }
+  
+/* Footer */
+
+.footer {
+    background-color: #0b283f;
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.footer-logo img {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.footer-bottom ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-bottom a {
+    color: #f4b400;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-bottom a:hover {
+    color: #f9c12e;
+}

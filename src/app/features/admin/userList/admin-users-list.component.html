@@ -1,0 +1,115 @@
+<div class="container mx-auto p-4 bg-white rounded shadow border border-[#0B283F]">
+  <!-- Input de búsqueda -->
+  <div class="mb-4">
+    <input
+      [(ngModel)]="searchQuery"
+      (input)="filterUsers()"
+      type="text"
+      placeholder="Buscar usuarios por nombre o correo"
+      class="w-full p-2 border border-[#0B283F] rounded focus:outline-none focus:ring-2 focus:ring-[#0B283F]"
+    />
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <table class="min-w-full bg-white border border-[#0B283F] rounded-lg">
+    <thead>
+      <tr class="bg-[#0B283F] text-white">
+        <th class="py-2 px-4 border-b border-[#0B283F]">Nombre</th>
+        <th class="py-2 px-4 border-b border-[#0B283F]">Correo Electrónico</th>
+        <th class="py-2 px-4 border-b border-[#0B283F]">Rol</th>
+        <th class="py-2 px-4 border-b border-[#0B283F]">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let user of filteredUsers"
+        class="hover:bg-gray-100 transition-colors"
+      >
+        <td class="py-2 px-4 border-b border-[#0B283F]">{{ user.name }}</td>
+        <td class="py-2 px-4 border-b border-[#0B283F]">{{ user.email }}</td>
+        <td class="py-2 px-4 border-b border-[#0B283F]">
+          {{ user.role || 'Sin rol' }}
+        </td>
+        <td class="py-2 px-4 border-b border-[#0B283F]">
+          <!-- Botón Eliminar -->
+          <button
+            (click)="abrirModalConfirmacion(user)"
+            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+          >
+            Eliminar
+          </button>
+        </td>
+      </tr>
+      <!-- Mensaje cuando no hay resultados -->
+      <tr *ngIf="filteredUsers.length === 0">
+        <td
+          colspan="4"
+          class="text-center py-4 text-gray-500 font-semibold border-t border-[#0B283F]"
+        >
+          No se encontraron usuarios.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Botones de paginación -->
+  <div class="flex justify-between mt-4">
+    <button
+      *ngIf="currentPage > 1"
+      (click)="loadUsers(currentPage - 1)"
+      class="bg-[#0B283F] text-white px-4 py-2 rounded hover:bg-[#07314f] transition-colors"
+    >
+      Anterior
+    </button>
+    <button
+      *ngIf="currentPage < totalPages"
+      (click)="loadUsers(currentPage + 1)"
+      class="bg-[#0B283F] text-white px-4 py-2 rounded hover:bg-[#07314f] transition-colors"
+    >
+      Siguiente
+    </button>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="mt-4 text-red-500">
+    {{ errorMessage }}
+  </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div
+  *ngIf="mostrarModal"
+  class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white rounded-lg shadow-lg w-1/3">
+    <!-- Encabezado del modal -->
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-lg font-semibold text-gray-700">Confirmar Acción</h2>
+      <button (click)="cerrarModal()" class="text-gray-500 hover:text-gray-700">
+        &times;
+      </button>
+    </div>
+    <!-- Contenido del modal -->
+    <div class="p-4 text-gray-600">
+      <p>
+        ¿Estás seguro de que deseas eliminar al usuario
+        <span class="font-semibold">{{ usuarioSeleccionado?.name }}</span>?
+      </p>
+    </div>
+    <!-- Botones del modal -->
+    <div class="flex justify-end p-4 border-t space-x-4">
+      <button
+        (click)="cerrarModal()"
+        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="confirmarEliminarUsuario()"
+        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+      >
+        Eliminar
+      </button>
+    </div>
+  </div>
+</div>

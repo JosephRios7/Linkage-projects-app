@@ -1,0 +1,312 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <!-- Título principal de la Fase -->
+  <div class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">
+      Fase 2: Avance de Proyectos de Vinculación
+    </h2>
+    <p class="text-gray-600">
+      Aquí puedes consultar y subir archivos correspondientes al avance de tu
+      proyecto.
+    </p>
+  </div>
+
+  <!-- Sección para mostrar archivos generales de la Fase2 (si los hay) -->
+  <div
+    *ngIf="archivosFase2 && archivosFase2.length > 0"
+    class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-6"
+  >
+    <h3 class="text-xl font-bold mb-4 text-gray-800">
+      Archivos de Avance (Fase2) Disponibles
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div
+        *ngFor="let archivo of archivosFase2"
+        class="bg-white p-3 rounded-lg shadow hover:shadow-xl transition flex flex-col justify-between"
+      >
+        <div class="flex justify-center mb-1">
+          <div
+            class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
+          >
+            <ng-container
+              *ngIf="
+                archivo.mime_type && archivo.mime_type.includes('pdf');
+                else otherIcon
+              "
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+                alt="PDF Icon"
+                class="w-7 h-7"
+              />
+            </ng-container>
+            <ng-template #otherIcon>
+              <img
+                src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+                alt="Doc Icon"
+                class="w-7 h-7"
+              />
+            </ng-template>
+          </div>
+        </div>
+        <h4 class="font-semibold text-center flex-1">
+          {{ archivo.titulo }}
+        </h4>
+        <button
+          class="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition w-full text-center mt-2"
+          (click)="descargarArchivoFase2(archivo)"
+        >
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de proyectos del docente en Fase2 o Fase3 -->
+  <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">
+      Mis Proyectos (Fase 2 y Fase 3)
+    </h3>
+    <table class="min-w-full border">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="px-4 py-2 border">Proyecto</th>
+          <th class="px-4 py-2 border">Fase</th>
+          <th class="px-4 py-2 border">Estado Fase</th>
+          <th class="px-4 py-2 border">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of proyectosFase2y3">
+          <td class="px-4 py-2 border">{{ p.nombre }}</td>
+          <td class="px-4 py-2 border">{{ p.fase }}</td>
+          <td class="px-4 py-2 border">{{ p.estado_fase }}</td>
+          <td class="px-4 py-2 border">
+            <!-- Botón para ver documentos del proyecto -->
+            <button
+              class="bg-blue-500 text-white px-2 py-1 mr-2 rounded hover:bg-blue-600 mb-1"
+              (click)="verDocumentosProyecto(p)"
+            >
+              Ver Documentos
+            </button>
+
+            <!-- Botón para ver observaciones -->
+            <button
+              class="bg-purple-600 text-white px-2 py-1 mr-2 rounded hover:bg-purple-700 mb-1"
+              (click)="verObservaciones(p)"
+            >
+              Ver Observaciones
+            </button>
+
+            <!-- Botón para subir archivos sólo si está en Fase2 y la fase no está finalizada/aprobada -->
+            <!-- Botón para subir archivos en Fase2 (cuando el proyecto está en "enviado" o en "correcciones") -->
+            <button
+              *ngIf="
+                p.fase === 'Fase2' &&
+                (p.estado_fase === 'pendiente' || p.estado === 'correcciones') &&
+                p.estado_fase !== 'finalizada'
+              "
+              class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+              (click)="abrirModalSubida(p)"
+            >
+              <!-- Si está en correcciones, podrías cambiar el texto -->
+              {{
+                p.estado === "correcciones"
+                  ? "Corregir Avance"
+                  : "Subir Archivos"
+              }}
+            </button>
+            <!-- <button
+              *ngIf="p.fase === 'Fase2' && p.estado_fase !== 'finalizada'"
+              class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+              (click)="abrirModalSubida(p)"
+            >
+              Subir Archivos
+            </button> -->
+            <!-- En Fase3, sólo visualización; no se muestra botón subir -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para ver documentos del proyecto seleccionado -->
+  <div
+    *ngIf="modalVerDocsVisible"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-4xl">
+      <h3 class="text-2xl font-bold mb-4">
+        Documentos del Proyecto: {{ proyectoConDocumentos?.nombre }}
+      </h3>
+
+      <!-- Lista / cuadrícula de documentos subidos -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          *ngFor="let doc of documentosProyecto"
+          class="bg-gray-100 p-3 rounded-lg flex flex-col justify-between"
+        >
+          <h4 class="font-semibold mb-2">{{ doc.titulo }}</h4>
+          <button
+            class="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600"
+            (click)="descargarDocumentoProyecto(doc)"
+          >
+            Descargar
+          </button>
+        </div>
+      </div>
+
+      <div class="text-right mt-4">
+        <button
+          class="bg-gray-500 text-white px-4 py-2 rounded"
+          (click)="cerrarModalVerDocs()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Observaciones -->
+  <div
+    *ngIf="modalObservacionesVisible"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl">
+      <h2 class="text-2xl font-bold mb-4">
+        Observaciones de {{ proyectoConObservaciones?.nombre }}
+      </h2>
+
+      <!-- Tabla de observaciones -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="px-4 py-2 border">Comentario</th>
+              <th class="px-4 py-2 border">Estado</th>
+              <th class="px-4 py-2 border">Archivos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let obs of observaciones">
+              <td class="px-4 py-2 border">{{ obs.comentario }}</td>
+              <td class="px-4 py-2 border">{{ obs.estado }}</td>
+              <td class="px-4 py-2 border">
+                <!-- Listar archivos de la observación -->
+                <div *ngIf="obs.archivos && obs.archivos.length > 0">
+                  <div
+                    *ngFor="let archivo of obs.archivos"
+                    class="flex space-x-2 items-center mb-2"
+                  >
+                    <span class="text-sm text-gray-700">{{
+                      archivo.titulo
+                    }}</span>
+                    <button
+                      class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
+                      (click)="descargarArchivoFase2(archivo)"
+                    >
+                      Descargar
+                    </button>
+                  </div>
+                </div>
+                <div *ngIf="!obs.archivos || obs.archivos.length === 0">
+                  <em class="text-gray-500">Sin archivos</em>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Botón para cerrar el modal -->
+      <div class="flex justify-end mt-4">
+        <button
+          class="bg-gray-500 text-white px-4 py-2 rounded"
+          (click)="cerrarModalObservaciones()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para subir archivos al proyecto en Fase2 -->
+  <div
+    *ngIf="modalSubidaVisible"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-w-2xl">
+      <h2 class="text-xl font-bold mb-4">Subir Archivos (Fase 2)</h2>
+      <p class="text-gray-600 mb-4">
+        Seleccione los documentos que desea subir para el avance de su proyecto.
+      </p>
+
+      <!-- Input de archivos (DOC, DOCX, PDF, etc.) -->
+      <input
+        type="file"
+        multiple
+        (change)="handleFileSelect($event)"
+        accept=".doc,.docx"
+        class="mb-4"
+      />
+
+      <ul class="mb-4 space-y-2">
+        <li
+          *ngFor="let file of archivosSeleccionados"
+          class="text-sm text-gray-700"
+        >
+          {{ file.name }}
+        </li>
+      </ul>
+
+      <div class="flex justify-end space-x-3">
+        <button
+          class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+          (click)="cerrarModalSubida()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          (click)="confirmarSubida()"
+        >
+          Subir Archivos
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de subida -->
+  <div
+    *ngIf="modalConfirmVisible"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+      <h3 class="text-xl font-bold mb-4">Confirmar Subida</h3>
+      <p class="text-gray-600 mb-4">
+        ¿Estás seguro de subir estos archivos para el avance de tu proyecto?
+      </p>
+      <div class="flex justify-end space-x-3">
+        <button
+          class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+          (click)="cancelarConfirmacion()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          (click)="enviarArchivosFase2()"
+        >
+          Subir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje Toast -->
+  <div
+    *ngIf="showToast"
+    class="fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-lg transition-opacity duration-500 ease-in-out"
+  >
+    ✅ {{ toastMessage }}
+  </div>
+</div>

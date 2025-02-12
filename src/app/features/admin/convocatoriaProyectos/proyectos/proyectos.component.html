@@ -1,0 +1,260 @@
+<div *ngIf="proyectos.length > 0" class="space-y-4">
+  <div
+    *ngFor="let proyecto of proyectos"
+    class="bg-white rounded-lg shadow-md p-6 flex flex-col space-y-2"
+  >
+    <div class="flex justify-between">
+      <a
+        [routerLink]="['/panel/proyectos/detalle', proyecto.id]"
+        class="text-xl font-semibold text-blue-500 hover:underline"
+      >
+        {{ proyecto.nombre }}
+      </a>
+
+      <button
+        class="bg-purple-600 hover:bg-purple-700 text-white py-0 px-4 rounded"
+        (click)="verObservaciones(proyecto)"
+      >
+        Ver Observaciones
+      </button>
+    </div>
+
+    <p class="text-gray-500">
+      <strong>Carrera:</strong> {{ proyecto.carrera }}
+    </p>
+    <p class="text-gray-500">
+      <strong>Fase:</strong> {{ proyecto.fasePresentacion }}
+    </p>
+    <p class="text-gray-500">
+      <strong>Modalidad:</strong> {{ proyecto.modalidad }}
+    </p>
+    <h2>{{ proyecto.fase }} / {{ proyecto.estado_fase }}</h2>
+
+    <div class="flex space-x-4 mt-4">
+      <!-- Botón CORREGIR -->
+      <button
+        class="bg-yellow-500 text-white px-4 py-1 rounded"
+        (click)="enviarCorreccion(proyecto)"
+        *ngIf="proyecto.estado !== 'aprobado'"
+      >
+        Corregir
+      </button>
+
+      <!-- Fase1: Mostrar modal con código/resol. si estado es 'subida' o 'enviado' -->
+      <button
+        class="bg-blue-500 text-white px-4 py-1 rounded"
+        *ngIf="
+          proyecto.fase === 'Fase1' &&
+          proyecto.estado_fase === 'subida' &&
+          proyecto.estado !== 'aprobado'
+        "
+        (click)="abrirModal(proyecto)"
+      >
+        Aprobar {{ proyecto.fase }}
+      </button>
+
+      <!-- Fase2/Fase3: aprobar sin código/resol si estado es 'enviado' -->
+      <button
+        class="bg-green-500 text-white px-4 py-1 rounded"
+        *ngIf="
+          (proyecto.fase === 'Fase2' || proyecto.fase === 'Fase3') &&
+          proyecto.estado_fase === 'subida' &&
+          proyecto.estado === 'enviado' &&
+          proyecto.estado !== 'aprobado'
+        "
+        (click)="aprobarFaseSiguiente(proyecto)"
+      >
+        Aprobar {{ proyecto.fase }}
+      </button>
+    </div>
+    <!-- Mostrar código y resolución si ya está aprobado
+    <div *ngIf="proyecto.estado === 'aprobado'" class="mt-4">
+      <p class="text-gray-600">
+        <strong>Código de Proyecto:</strong> {{ proyecto.codigo_proyecto }}
+      </p>
+      <p class="text-gray-600">
+        <strong>Número de Resolución:</strong> {{ proyecto.numero_resolucion }}
+      </p>
+      <button
+        class="bg-green-500 text-white font-bold py-2 px-4 rounded"
+        disabled
+      >
+        Aprobado {{proyecto.fase}}
+      </button>
+      
+    </div> -->
+
+    <!-- Botones para Aprobar y Corregir (si no está aprobado) -->
+    <!-- <div *ngIf="proyecto.estado !== 'aprobado'" class="flex space-x-4 mt-4">
+
+      <button
+        *ngIf="proyecto.fase === 'Fase1'"
+
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+        (click)="abrirModal(proyecto)"
+      >
+        Aprobar {{proyecto.fase}}
+      </button>
+      <button
+        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
+        (click)="enviarCorreccion(proyecto)"
+      >
+        Corregir
+      </button>
+    </div> -->
+  </div>
+</div>
+
+<!-- Modal para Aprobar Proyecto -->
+<div
+  *ngIf="modalVisible"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+    <h2 class="text-xl font-bold mb-4">Aprobar Proyecto</h2>
+    <p class="text-gray-600">
+      Ingrese el código del proyecto y el número de resolución.
+    </p>
+    <div class="mt-4">
+      <label class="block text-gray-700">Código de Proyecto</label>
+      <input
+        type="text"
+        [(ngModel)]="codigoProyecto"
+        placeholder="Ingrese el código"
+        class="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+      />
+    </div>
+    <div class="mt-4">
+      <label class="block text-gray-700">Número de Resolución</label>
+      <input
+        type="text"
+        [(ngModel)]="numeroResolucion"
+        placeholder="Ingrese el número"
+        class="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+      />
+    </div>
+    <div class="flex justify-end space-x-4 mt-6">
+      <button
+        class="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500"
+        (click)="cerrarModal()"
+      >
+        Cancelar
+      </button>
+      <button
+        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        (click)="aprobarProyecto()"
+      >
+        Aprobar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel de Observación para Corrección -->
+<div
+  *ngIf="panelObservacionVisible"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+    <h2 class="text-xl font-bold mb-4">Observación General</h2>
+    <textarea
+      [(ngModel)]="observacionComentario"
+      placeholder="Ingrese la observación"
+      class="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+      rows="4"
+    ></textarea>
+    <div class="mt-4">
+      <label class="block text-gray-700 mb-2">Subir Archivo Word</label>
+      <input
+        type="file"
+        multiple
+        accept=".doc,.docx"
+        (change)="handleObservacionFileInput($event)"
+      />
+    </div>
+    <div class="flex justify-end space-x-4 mt-6">
+      <button
+        class="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500"
+        (click)="cancelarObservacion()"
+      >
+        Cancelar
+      </button>
+      <button
+        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        (click)="enviarObservacion()"
+      >
+        Enviar Observación
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Modal para Observaciones -->
+<div
+  *ngIf="modalObservacionesVisible"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl">
+    <h2 class="text-2xl font-bold mb-4">
+      Observaciones de {{ proyectoConObservaciones?.nombre }}
+    </h2>
+
+    <!-- Tabla de observaciones -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full border">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2 border">Comentario</th>
+            <th class="px-4 py-2 border">Estado</th>
+            <th class="px-4 py-2 border">Archivos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let obs of observaciones">
+            <td class="px-4 py-2 border">{{ obs.comentario }}</td>
+            <td class="px-4 py-2 border">{{ obs.estado }}</td>
+            <td class="px-4 py-2 border">
+              <!-- Listar archivos de la observación -->
+              <div *ngIf="obs.archivos && obs.archivos.length > 0">
+                <div
+                  *ngFor="let archivo of obs.archivos"
+                  class="flex space-x-2 items-center mb-2"
+                >
+                  <span class="text-sm text-gray-700">{{
+                    archivo.titulo
+                  }}</span>
+                  <button
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
+                    (click)="descargarArchivo(archivo)"
+                  >
+                    Descargar
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="!obs.archivos || obs.archivos.length === 0">
+                <em class="text-gray-500">Sin archivos</em>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Botón para cerrar el modal -->
+    <div class="flex justify-end mt-4">
+      <button
+        class="bg-gray-500 text-white px-4 py-2 rounded"
+        (click)="cerrarModalObservaciones()"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de Notificación -->
+<div
+  *ngIf="showToast"
+  class="fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-lg transition-opacity duration-500 ease-in-out"
+>
+  ✅ {{ toastMessage }}
+</div>

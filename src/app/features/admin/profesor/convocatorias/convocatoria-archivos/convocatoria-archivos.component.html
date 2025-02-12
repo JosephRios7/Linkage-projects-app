@@ -1,0 +1,60 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+  <div *ngIf="convocatoria; else errorTemplate">
+    <!-- Título de la convocatoria -->
+    <h1 class="text-2xl font-bold mb-6">{{ convocatoria.titulo }}</h1>
+    
+    <!-- Sección: Archivos de la Convocatoria -->
+    <h2 class="text-xl font-semibold mb-4">Archivos de Convocatoria</h2>
+    <div *ngIf="archivosConvocatoria && archivosConvocatoria.length > 0; else noConvFiles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div *ngFor="let archivo of archivosConvocatoria" class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between">
+        <div class="flex justify-center mb-4">
+          <div class="w-16 h-16 bg-gray-200 rounded-full flex justify-center items-center">
+            <ng-container *ngIf="archivo['mime_type'] && archivo['mime_type'].includes('pdf'); else otherIcon">
+              <img src="https://cdn-icons-png.flaticon.com/512/179/179483.png" alt="PDF Icon" class="w-12 h-12"/>
+            </ng-container>
+            <ng-template #otherIcon>
+              <img src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png" alt="Document Icon" class="w-12 h-12"/>
+            </ng-template>
+          </div>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-center flex-1">{{ archivo.titulo }}</h3>
+        <button (click)="descargarArchivoConv(archivo.id!)" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition w-full text-center">
+          Descargar
+        </button>
+      </div>
+    </div>
+    <ng-template #noConvFiles>
+      <p class="text-gray-600 mb-8">No hay archivos de convocatoria.</p>
+    </ng-template>
+
+    <!-- Sección: Archivos de las Fases -->
+    <div *ngFor="let fase of fases" class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Fase: {{ fase.nombre }}</h2>
+      <div *ngIf="fase.archivos && fase.archivos.length > 0; else noFaseFiles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let archivo of fase.archivos" class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex justify-center items-center">
+              <ng-container *ngIf="archivo['mime_type'] && archivo['mime_type'].includes('pdf'); else otherIcon2">
+                <img src="https://cdn-icons-png.flaticon.com/512/179/179483.png" alt="PDF Icon" class="w-12 h-12"/>
+              </ng-container>
+              <ng-template #otherIcon2>
+                <img src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png" alt="Document Icon" class="w-12 h-12"/>
+              </ng-template>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold mb-2 text-center flex-1">{{ archivo.titulo }}</h3>
+          <button (click)="descargarArchivoFase(archivo.id)" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition w-full text-center">
+            Descargar
+          </button>
+        </div>
+      </div>
+      <ng-template #noFaseFiles>
+        <p class="text-gray-600">No hay archivos para esta fase.</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <ng-template #errorTemplate>
+    <p class="text-red-500">{{ errorMessage }}</p>
+  </ng-template>
+</div>

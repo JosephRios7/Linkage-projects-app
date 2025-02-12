@@ -1,0 +1,52 @@
+<div class="min-h-screen bg-gray-100 flex items-center justify-center" style="background-image: url('images/Bolivar.jpg'); background-size: cover; background-position: center;">
+  <!-- Mostrar un spinner mientras loading es true -->
+  <div *ngIf="loading" class="flex flex-col items-center">
+    <!-- Logo de carga -->
+    <img src="images/escudo-UEB1.png" alt="Logo de carga" class="h-5 w-auto mb-4" />
+    <div class="animate-spin rounded-full h-5 w-5 border-t-4 border-gray-300 border-solid"></div>
+    <p class="mt-4 text-gray-300 font-semibold">Cargando...</p>
+  </div>
+
+  <!-- Formulario de inicio de sesión -->
+  <div *ngIf="!loading" class="w-full max-w-md bg-[#0B283F] bg-opacity-25 rounded-lg shadow-md p-6">
+    <!-- Logo de inicio de sesión -->
+    <div class="flex justify-center mb-6">
+      <img src="images/escudo-UEB.png" alt="Logo de inicio de sesión" class="h-16 w-auto" />
+    </div>
+    <h2 class="text-3xl font-bold text-white text-center mb-6">Iniciar Sesión</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-4">
+        <label for="email" class="block text-lg font-medium text-gray-300">Correo Electrónico</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-transparent text-white text-lg"
+          placeholder="Ingresa tu correo"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="password" class="block text-lg font-medium text-gray-300">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-transparent text-white text-lg"
+          placeholder="Ingresa tu contraseña"
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        [disabled]="loginForm.invalid"
+        class="w-full bg-[#0B283F] text-white py-2 px-4 rounded hover:bg-[#0B283F] opacity-90"
+      >
+        Iniciar Sesión
+      </button>
+    </form>
+    <p *ngIf="errorMessage" class="text-red-500 text-center mt-4 text-lg">
+      {{ errorMessage }}
+    </p>
+  </div>
+</div>

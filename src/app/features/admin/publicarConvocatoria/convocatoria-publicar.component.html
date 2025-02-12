@@ -1,0 +1,267 @@
+<div class="container mx-auto p-4 bg-white rounded shadow">
+  <h2 class="text-2xl font-bold mb-4">Crear Convocatoria</h2>
+
+  <form [formGroup]="convocatoriaForm" (ngSubmit)="guardarConvocatoria()">
+    <!-- Campos del formulario (Título, Descripción, Fechas) -->
+    <div class="mb-4">
+      <label for="titulo" class="block text-gray-700">Título</label>
+      <input
+        id="titulo"
+        type="text"
+        formControlName="titulo"
+        class="border rounded w-full p-2"
+      />
+      <div
+        *ngIf="
+          convocatoriaForm.get('titulo')?.invalid &&
+          convocatoriaForm.get('titulo')?.touched
+        "
+        class="text-red-500 text-sm"
+      >
+        El título es obligatorio y no debe exceder 255 caracteres.
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label for="descripcion" class="block text-gray-700">Descripción</label>
+      <textarea
+        id="descripcion"
+        formControlName="descripcion"
+        rows="4"
+        class="border rounded w-full p-2"
+      ></textarea>
+      <div
+        *ngIf="
+          convocatoriaForm.get('descripcion')?.invalid &&
+          convocatoriaForm.get('descripcion')?.touched
+        "
+        class="text-red-500 text-sm"
+      >
+        La descripción es obligatoria.
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Fecha de Inicio -->
+      <div>
+        <label for="fecha_inicio" class="block text-gray-700 font-semibold"
+          >Fecha de Inicio</label
+        >
+        <input
+          id="fecha_inicio"
+          type="date"
+          formControlName="fecha_inicio"
+          class="border rounded w-full p-2"
+        />
+        <div
+          *ngIf="
+            convocatoriaForm.get('fecha_inicio')?.invalid &&
+            convocatoriaForm.get('fecha_inicio')?.touched
+          "
+          class="text-red-500 text-sm mt-1"
+        >
+          La fecha de inicio es obligatoria.
+        </div>
+      </div>
+
+      <!-- Fecha de Fin -->
+      <div>
+        <label for="fecha_fin" class="block text-gray-700 font-semibold"
+          >Fecha de Fin</label
+        >
+        <input
+          id="fecha_fin"
+          type="date"
+          formControlName="fecha_fin"
+          class="border rounded w-full p-2"
+        />
+        <div
+          *ngIf="
+            convocatoriaForm.get('fecha_fin')?.invalid &&
+            convocatoriaForm.get('fecha_fin')?.touched
+          "
+          class="text-red-500 text-sm mt-1"
+        >
+          La fecha de fin es obligatoria.
+        </div>
+      </div>
+    </div>
+
+    <!-- Subir Archivos -->
+    @if (!isEdit) {
+    <div class="mb-6">
+      <label class="block text-lg font-medium text-gray-700"
+        >Subir Archivos</label
+      >
+      <div
+        id="dropzone"
+        class="flex flex-col items-center justify-center w-full h-20 mt-2 border-2 border-dashed border-gray-300 rounded-lg bg-gray-100 hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer"
+        (click)="fileInput.click()"
+        (drop)="onDrop($event)"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+      >
+        <p class="text-gray-500 text-center">
+          Haz clic o arrastra archivos a esta área para subirlos
+        </p>
+        <p class="text-sm text-gray-500 mt-1">
+          Formatos aceptados: PDF, DOC, DOCX
+        </p>
+        <input
+          type="file"
+          #fileInput
+          id="fileInput"
+          accept=".pdf, .doc, .docx"
+          multiple
+          (change)="onFileChange($event)"
+          class="hidden"
+        />
+      </div>
+      <ul class="mt-4 space-y-2">
+        <li *ngFor="let file of archivos" class="text-sm text-gray-700">
+          {{ file.name }}
+        </li>
+      </ul>
+    </div>
+    }
+    <!-- Sección para la gestión de fases -->
+    <div class="mt-6">
+      <h3 class="text-xl font-bold mb-2">Fases de la Convocatoria</h3>
+
+      <div formArrayName="fases">
+        <div
+          *ngFor="let fase of fases.controls; let i = index"
+          [formGroupName]="i"
+          class="border p-4 rounded mb-4"
+        >
+          <h4 class="text-lg font-semibold">{{ fase.get("nombre")?.value }}</h4>
+
+          <!-- Estado -->
+          <!-- <p class="text-sm">
+        Estado: 
+        <span [class.text-green-600]="fase.get('estado')?.value" [class.text-gray-500]="!fase.get('estado')?.value">
+          {{ fase.get('estado')?.value ? 'Habilitado' : 'Deshabilitado' }}
+        </span>
+      </p> -->
+
+          <!-- Resumen -->
+          <!-- <textarea formControlName="resumen" placeholder="Escribe un resumen..."
+        class="border rounded w-full p-2 mt-2"></textarea> -->
+
+          <!-- Fechas -->
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div> 
+              <label class="block text-gray-700 font-semibold"
+                >Fecha de Inicio</label
+              >
+              <input
+                type="date"
+                formControlName="fecha_inicio"
+                class="border rounded w-full p-2"
+              />
+            </div>
+            <div>
+              <label class="block text-gray-700 font-semibold"
+                >Fecha de Fin</label
+              >
+              <input
+                type="date"
+                formControlName="fecha_fin"
+                class="border rounded w-full p-2"
+              />
+            </div>
+          </div>
+          <div
+            class="text-yellow-600 bg-yellow-100 border border-yellow-400 p-2 rounded mb-4"
+            *ngIf="mensajeAdvertencia"
+          >
+            {{ mensajeAdvertencia }}
+          </div>
+
+          <!-- Subir archivos -->
+           @if (!isEdit) {
+          <div class="mt-4">
+            <label class="block text-lg font-medium text-gray-700"
+              >Subir Archivos (Word)</label
+            >
+            <input
+              type="file"
+              accept=".doc, .docx"
+              multiple
+              (change)="onFileChangeFase($event, i)"
+              class="mt-2"
+            />
+            <ul class="mt-2">
+              <li
+                *ngFor="let file of fase.get('archivos')?.value"
+                class="text-sm text-gray-700"
+              >
+                {{ file.name }}
+              </li>
+            </ul>
+          </div>}
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón de guardar con estado de carga -->
+    <button
+      type="submit"
+      [disabled]="cargando"
+      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+    >
+      {{ cargando ? "Guardando..." : "Guardar Convocatoria" }}
+    </button>
+  </form>
+
+  <!-- Mensaje de Éxito -->
+  <div
+    *ngIf="mensajeExito"
+    class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-sm p-2 rounded shadow-lg z-50"
+  >
+    <p class="font-semibold">{{ mensajeExito }}</p>
+  </div>
+
+  <!-- Mensaje de Error -->
+  <div
+    *ngIf="mensajeError"
+    class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-sm p-2 rounded shadow-lg z-50"
+  >
+    <p class="font-semibold">{{ mensajeError }}</p>
+  </div>
+
+  <!-- Mensaje de Advertencia -->
+  <div
+    *ngIf="mensajeAdvertencia"
+    class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white text-sm p-2 rounded shadow-lg z-50"
+  >
+    <p class="font-semibold">{{ mensajeAdvertencia }}</p>
+  </div>
+
+  <!-- Panel de "Cargando" -->
+  <div
+    *ngIf="cargando"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  >
+    <div
+      class="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 p-8 rounded-lg shadow-lg max-w-sm w-full text-center"
+    >
+      <img
+        src="images/escudo-UEB1.png"
+        alt="Cargando"
+        class="mx-auto mb-6 animate-spin-slow"
+      />
+      <p class="text-2xl text-white font-semibold mb-4">
+        Creando Convocatoria...
+      </p>
+      <div class="relative w-16 h-16 mx-auto">
+        <div
+          class="absolute inset-0 border-4 border-t-4 border-white border-solid rounded-full animate-spin"
+        ></div>
+      </div>
+      <p class="text-white mt-4">
+        Por favor, espere mientras procesamos los datos.
+      </p>
+    </div>
+  </div>
+</div>

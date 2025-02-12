@@ -1,0 +1,26 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+  <!-- Tarjetas de convocatorias publicadas -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let convocatoria of convocatorias" class="bg-white rounded-lg shadow-lg border border-gray-200">
+          <!-- Encabezado de la tarjeta -->
+          <div class="bg-[#0B283F] text-white rounded-t-lg px-4 py-3">
+              <h2 
+                  class="text-lg font-semibold truncate max-h-[3rem] leading-[1.5rem] flex items-center">
+                  <a 
+                      [routerLink]="['/profesor/convocatorias/convocatoriarchivos', convocatoria.id]" 
+                      class="hover:underline block w-full text-ellipsis overflow-hidden">
+                      {{ convocatoria.titulo }}
+                  </a>
+              </h2>
+          </div>
+          <!-- Contenido de la tarjeta -->
+          <div class="px-4 py-4">
+              <p class="text-gray-700 mb-3"><span class="font-semibold">Descripciónes:</span> {{ convocatoria.descripcion }}</p>
+              <div class="text-sm text-gray-600">
+                  <p><span class="font-semibold">Fecha inicio:</span> {{ convocatoria.fecha_inicio }}</p>
+                  <p><span class="font-semibold">Fecha fin:</span> {{ convocatoria.fecha_fin }}</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
