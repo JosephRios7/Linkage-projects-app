@@ -1,73 +1,132 @@
+<div class="flex space-x-4 mb-4">
+  <input
+    type="text"
+    placeholder="Buscar proyectos..."
+    [(ngModel)]="searchTerm"
+    class="border p-2 rounded-lg w-full"
+  />
+  <button
+    class="bg-blue-500 text-white px-4 py-2 rounded"
+    (click)="refrescarProyectos()"
+  >
+    Refrescar
+  </button>
+</div>
+
 <div *ngIf="proyectos.length > 0" class="space-y-4">
   <div
-    *ngFor="let proyecto of proyectos"
+    *ngFor="let proyecto of filteredProyectos"
     class="bg-white rounded-lg shadow-md p-6 flex flex-col space-y-2"
   >
-    <div class="flex justify-between">
-      <a
-        [routerLink]="['/panel/proyectos/detalle', proyecto.id]"
-        class="text-xl font-semibold text-blue-500 hover:underline"
-      >
-        {{ proyecto.nombre }}
-      </a>
+    
+      <div class="flex justify-between">
+        <a
+          [routerLink]="['/panel/proyectos/detalle', proyecto.id]"
+          class="text-xl font-semibold text-blue-500 hover:underline"
+        >
+          {{ proyecto.nombre }}
+          -
+          <span class="text-green-700">
+            @if (proyecto.fase === 'Fase1') { Fase Presentación } @else if
+            (proyecto.fase === 'Fase2'){ Fase Avance } @else if (proyecto.fase
+            === 'Fase3'){ Fase Cierre }
+          </span>
+          <span class="bg-amber-500/100 rounded text-white px-1">
+            {{ proyecto.estado_fase }}
+          </span>
+        </a>
 
-      <button
-        class="bg-purple-600 hover:bg-purple-700 text-white py-0 px-4 rounded"
-        (click)="verObservaciones(proyecto)"
-      >
-        Ver Observaciones
-      </button>
-    </div>
+        <button
+          class="bg-purple-600 hover:bg-purple-700 text-white py-0 px-4 rounded"
+          (click)="verObservaciones(proyecto)"
+        >
+          Ver Observaciones
+        </button>
+      </div>
 
-    <p class="text-gray-500">
-      <strong>Carrera:</strong> {{ proyecto.carrera }}
-    </p>
-    <p class="text-gray-500">
-      <strong>Fase:</strong> {{ proyecto.fasePresentacion }}
-    </p>
-    <p class="text-gray-500">
-      <strong>Modalidad:</strong> {{ proyecto.modalidad }}
-    </p>
-    <h2>{{ proyecto.fase }} / {{ proyecto.estado_fase }}</h2>
+      <p class="text-gray-500">
+        <strong>Carrera:</strong> {{ proyecto.carrera }}
+      </p>
+      <p class="text-gray-500">
+        <strong>Fase:</strong> {{ proyecto.fasePresentacion }}
+      </p>
+      <p class="text-gray-500">
+        <strong>Modalidad:</strong> {{ proyecto.modalidad }}
+      </p>
+      <!-- <h2>{{ proyecto.fase }} / {{ proyecto.estado_fase }}</h2> -->
 
-    <div class="flex space-x-4 mt-4">
-      <!-- Botón CORREGIR -->
-      <button
-        class="bg-yellow-500 text-white px-4 py-1 rounded"
-        (click)="enviarCorreccion(proyecto)"
-        *ngIf="proyecto.estado !== 'aprobado'"
-      >
-        Corregir
-      </button>
+      <div class="flex space-x-4 mt-4">
+        <!-- Botón CORREGIR -->
+        <button
+          class="bg-yellow-500 text-white px-4 py-1 rounded"
+          (click)="enviarCorreccion(proyecto)"
+          *ngIf="
+            proyecto.estado !== 'aprobado' && proyecto.estado !== 'finalizado'
+          "
+        >
+          Corregir
+        </button>
 
-      <!-- Fase1: Mostrar modal con código/resol. si estado es 'subida' o 'enviado' -->
-      <button
-        class="bg-blue-500 text-white px-4 py-1 rounded"
-        *ngIf="
-          proyecto.fase === 'Fase1' &&
-          proyecto.estado_fase === 'subida' &&
-          proyecto.estado !== 'aprobado'
-        "
-        (click)="abrirModal(proyecto)"
-      >
-        Aprobar {{ proyecto.fase }}
-      </button>
+        <!-- Fase1: Mostrar modal con código/resol. si estado es 'subida' o 'enviado' -->
+        <button
+          class="bg-blue-500 text-white px-4 py-1 rounded"
+          *ngIf="
+            proyecto.fase === 'Fase1' &&
+            proyecto.estado_fase === 'subida' &&
+            proyecto.estado !== 'aprobado'
+          "
+          (click)="abrirModal(proyecto)"
+        >
+          Aprobar
+          <span>
+            @if (proyecto.fase === 'Fase1') { Fase Presentación } @else if
+            (proyecto.fase === 'Fase2'){ Fase Avance } @else if (proyecto.fase
+            === 'Fase3'){ Fase Cierre }
+          </span>
+        </button>
 
-      <!-- Fase2/Fase3: aprobar sin código/resol si estado es 'enviado' -->
-      <button
-        class="bg-green-500 text-white px-4 py-1 rounded"
-        *ngIf="
-          (proyecto.fase === 'Fase2' || proyecto.fase === 'Fase3') &&
-          proyecto.estado_fase === 'subida' &&
-          proyecto.estado === 'enviado' &&
-          proyecto.estado !== 'aprobado'
-        "
-        (click)="aprobarFaseSiguiente(proyecto)"
-      >
-        Aprobar {{ proyecto.fase }}
-      </button>
-    </div>
-    <!-- Mostrar código y resolución si ya está aprobado
+        <!-- Fase2: aprobar sin código/resol si estado es 'enviado'  -->
+        <button
+          class="bg-green-500 text-white px-4 py-1 rounded"
+          *ngIf="
+            proyecto.fase === 'Fase2' &&
+            proyecto.estado_fase === 'subida' &&
+            proyecto.estado === 'enviado' &&
+            proyecto.estado !== 'aprobado'
+          "
+          (click)="aprobarFaseSiguiente(proyecto)"
+        >
+          Aprobar
+          <span>
+            @if (proyecto.fase === 'Fase1') { Fase Presentación } @else if
+            (proyecto.fase === 'Fase2'){ Fase Avance } @else if (proyecto.fase
+            === 'Fase3'){ Fase Cierre }
+          </span>
+        </button>
+        <!-- Fase3: aprobar sin código/resol si estado es 'enviado' -->
+        <button
+          class="bg-green-500 text-white px-4 py-1 rounded"
+          *ngIf="
+            proyecto.fase === 'Fase3' &&
+            proyecto.estado_fase === 'subida' &&
+            proyecto.estado === 'enviado' &&
+            proyecto.estado !== 'aprobado' &&
+            proyecto.estado !== 'finalizado'
+          "
+        >
+          <a
+            [routerLink]="['/panel/proyectos/detalle', proyecto.id]"
+            class="font-semibol"
+            >Aprobar
+            <span>
+              @if (proyecto.fase === 'Fase1') { Fase Presentación } @else if
+              (proyecto.fase === 'Fase2'){ Fase Avance } @else if (proyecto.fase
+              === 'Fase3'){ Fase Cierre }
+            </span></a
+          >
+        </button>
+      </div>
+      <!-- Mostrar código y resolución si ya está aprobado
     <div *ngIf="proyecto.estado === 'aprobado'" class="mt-4">
       <p class="text-gray-600">
         <strong>Código de Proyecto:</strong> {{ proyecto.codigo_proyecto }}
@@ -84,8 +143,8 @@
       
     </div> -->
 
-    <!-- Botones para Aprobar y Corregir (si no está aprobado) -->
-    <!-- <div *ngIf="proyecto.estado !== 'aprobado'" class="flex space-x-4 mt-4">
+      <!-- Botones para Aprobar y Corregir (si no está aprobado) -->
+      <!-- <div *ngIf="proyecto.estado !== 'aprobado'" class="flex space-x-4 mt-4">
 
       <button
         *ngIf="proyecto.fase === 'Fase1'"
@@ -102,7 +161,8 @@
         Corregir
       </button>
     </div> -->
-  </div>
+    </div>
+  
 </div>
 
 <!-- Modal para Aprobar Proyecto -->

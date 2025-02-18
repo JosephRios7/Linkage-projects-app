@@ -1,5 +1,5 @@
 <div class="max-w-4xl mx-auto p-4">
-  <div class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto mb-6">
+  <div class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto mb-2">
     <h2 class="text-2xl font-bold text-gray-800 mb-2">
       Fase 1: Presentación de Propuestas
     </h2>
@@ -10,56 +10,62 @@
   <!-- LISTADO DE PROYECTOS DEL PROFESOR EN FASE "PRESENTACIÓN" -->
 
   <!-- Bloque para mostrar los archivos de la fase "Presentación de Propuestas" -->
-  <div *ngIf="archivosFase && archivosFase.length > 0" class="mb-4">
-    <h2 class="text-xl font-bold">Archivos de Presentación de Propuestas</h2>
-  </div>
-
   <div
     *ngIf="archivosFase && archivosFase.length > 0"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4"
+    class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-2"
   >
+    <h2 class="text-xl font-bold">Archivos de Presentación de Propuestas</h2>
+
     <div
-      *ngFor="let archivo of archivosFase"
-      class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
+      *ngIf="archivosFase && archivosFase.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
     >
-      <div class="flex justify-center mb-1">
-        <div
-          class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-        >
-          <ng-container
-            *ngIf="
-              archivo['mime_type'] && archivo['mime_type'].includes('pdf');
-              else otherIcon
-            "
-          >
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
-              alt="PDF Icon"
-              class="w-7 h-7"
-            />
-          </ng-container>
-          <ng-template #otherIcon>
-            <img
-              src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
-              alt="Document Icon"
-              class="w-9 h-9"
-            />
-          </ng-template>
-        </div>
-      </div>
-      <h3 class="font-semibold mb-2 text-center flex-1">
-        {{ archivo.titulo }}
-      </h3>
-      <button
-        (click)="descargarArchivoFase(archivo.id!)"
-        class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+      <div
+        *ngFor="let archivo of archivosFase"
+        class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
       >
-        Descargar
-      </button>
+        <div class="flex justify-center mb-1">
+          <div
+            class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
+          >
+            <ng-container
+              *ngIf="
+                archivo['mime_type'] && archivo['mime_type'].includes('pdf');
+                else otherIcon
+              "
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+                alt="PDF Icon"
+                class="w-7 h-7"
+              />
+            </ng-container>
+            <ng-template #otherIcon>
+              <img
+                src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+                alt="Document Icon"
+                class="w-9 h-9"
+              />
+            </ng-template>
+          </div>
+        </div>
+        <h3 class="font-semibold mb-2 text-center flex-1">
+          {{ archivo.titulo }}
+        </h3>
+        <button
+          (click)="descargarArchivoFase(archivo.id!)"
+          class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+        >
+          Descargar
+        </button>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="proyectos.length > 0" class="mb-4">
+  <div
+    *ngIf="proyectos.length > 0"
+    class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-2"
+  >
     <h2 class="text-xl font-bold">
       Mis Proyectos en Presentación de Propuesta
     </h2>
@@ -77,7 +83,10 @@
         <tr *ngFor="let p of proyectos">
           <td class="px-4 py-2 border">{{ p.nombre }}</td>
           <!-- <td class="px-4 py-2 border">{{ p.estado }}</td> -->
-          <td class="px-4 py-2 border">{{ p.fase }}</td>
+          <td class="px-4 py-2 border">
+            @if (p.fase === 'Fase1') { Fase Presentación } @else if (p.fase ===
+            'Fase2'){ Fase Avance } @else if (p.fase === 'Fase3'){ Fase Cierre }
+          </td>
           <td class="px-4 py-2 border">{{ p.estado_fase }}</td>
           <td class="px-4 py-2 border">
             <button
@@ -96,14 +105,15 @@
         </tr>
       </tbody>
     </table>
-
-    <!-- Bloque para mostrar los archivos de la fase "Presentación de Propuestas" q subio el docente -->
-    <div *ngIf="misArchivosFase && misArchivosFase.length > 0" class="mb-4">
-      <h2 class="text-xl font-bold">
-        Archivos subidos para Presentación de Propuesta
-      </h2>
-    </div>
-
+  </div>
+  <!-- Bloque para mostrar los archivos de la fase "Presentación de Propuestas" q subio el docente -->
+  <div
+    *ngIf="misArchivosFase && misArchivosFase.length > 0"
+    class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-2"
+  >
+    <h2 class="text-xl font-bold">
+      Archivos subidos para Presentación de Propuesta
+    </h2>
     <div
       *ngIf="misArchivosFase && misArchivosFase.length > 0"
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4"
@@ -150,8 +160,10 @@
     </div>
   </div>
   <!-- *ngIf="estadoProyecto === 'enviado' || estadoProyecto === 'correcciones'" -->
-    <div *ngIf="editMode || canCreateProject(); else noCreation">
-  
+  <div
+    *ngIf="editMode || canCreateProject() || verDetalle; else noCreation"
+    class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-2"
+  >
     <h1 class="text-2xl font-bold mb-4">
       Formulario de Formato de presentación
     </h1>
@@ -182,6 +194,24 @@
         >
           El nombre del proyecto es obligatorio.
         </div>
+      </div>
+      <!-- code y numero -->
+
+      <div *ngIf="codigo_proyecto">
+        <label class="block text-sm font-medium">Código del proyecto</label>
+        <span
+          class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+        >
+          {{ codigo_proyecto }}
+        </span>
+      </div>
+      <div *ngIf="numero_resolucion">
+        <label class="block text-sm font-medium">Número de resolución</label>
+        <span
+          class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+        >
+          {{ numero_resolucion }}
+        </span>
       </div>
 
       <!-- Dominio -->
@@ -263,6 +293,15 @@
               >Cédula</label
             >
             <input
+              *ngIf="misArchivosFase && misArchivosFase.length > 0"
+              id="docenteCedula"
+              type="text"
+              formControlName="cedula"
+              class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+              [readOnly]="true"
+            />
+            <input
+              *ngIf="misArchivosFase && misArchivosFase.length <= 0"
               id="docenteCedula"
               type="text"
               formControlName="cedula"
@@ -287,6 +326,7 @@
               >Correo</label
             >
             <input
+              [readOnly]="true"
               id="docenteCorreo"
               type="email"
               formControlName="correo"
@@ -395,7 +435,7 @@
       </div>
 
       <!-- Datos del Estudiante -->
-      <fieldset class="border rounded-md p-4">
+      <!-- <fieldset class="border rounded-md p-4">
         <legend class="text-lg font-medium">Datos del Estudiante</legend>
 
         <div formArrayName="estudiantes" class="space-y-6">
@@ -487,7 +527,82 @@
         >
           Agregar Estudiante
         </button>
-      </fieldset>
+      </fieldset> -->
+<fieldset class="border rounded-md p-4">
+  <legend class="text-lg font-medium">Datos del Estudiante</legend>
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead>
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Nombre</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Apellido</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Cédula</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Género</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Correo</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
+      </tr>
+    </thead>
+    <tbody formArrayName="estudiantes" class="bg-white divide-y divide-gray-200">
+      <tr *ngFor="let estudiante of estudiantes.controls; let i = index" [formGroupName]="i">
+        <td class="px-4 py-2">
+          <input
+            type="text"
+            formControlName="nombre"
+            class="w-full border rounded-md p-1"
+            placeholder="Nombre"
+          />
+        </td>
+        <td class="px-4 py-2">
+          <input
+            type="text"
+            formControlName="apellido"
+            class="w-full border rounded-md p-1"
+            placeholder="Apellido"
+          />
+        </td>
+        <td class="px-4 py-2">
+          <input
+            type="text"
+            formControlName="cedula"
+            class="w-full border rounded-md p-1"
+            placeholder="Cédula"
+          />
+        </td>
+        <td class="px-4 py-2">
+          <select formControlName="genero" class="w-full border rounded-md p-1">
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+          </select>
+        </td>
+        <td class="px-4 py-2">
+          <input
+            type="email"
+            formControlName="correo"
+            class="w-full border rounded-md p-1"
+            placeholder="Correo"
+          />
+        </td>
+        <td class="px-4 py-2">
+          <button
+            type="button"
+            (click)="eliminarEstudiante(i)"
+            class="bg-red-500 text-white px-2 py-1 rounded-md"
+          >
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="mt-4">
+    <button
+      type="button"
+      (click)="agregarEstudiante()"
+      class="bg-blue-500 text-white px-4 py-2 rounded-md"
+    >
+      Agregar Estudiante
+    </button>
+  </div>
+</fieldset>
 
       <!-- Subir Documentos -->
       <div>
@@ -507,7 +622,7 @@
       <!-- Botón de Enviar -->
 
       <button
-        *ngIf="!editMode"
+        *ngIf="!editMode && canCreateProject()"
         type="submit"
         [disabled]="projectForm.invalid"
         class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
@@ -563,13 +678,17 @@
             d="M6 18L18 6M6 6l12 12"
           />
         </svg>
-        <span>
+        <!-- <span>
           {{
             enviadoCorrectamente
               ? "El formulario se envió correctamente."
               : "Ocurrió un error al enviar el formulario. Inténtalo de nuevo."
           }}
-        </span>
+        </span> -->
+        <span>
+  {{ toastMessage }}
+</span>
+
       </div>
     </form>
   </div>
@@ -602,7 +721,7 @@
   <!-- Modal para Observaciones -->
   <div
     *ngIf="modalObservacionesVisible"
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 modal"
   >
     <div class="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl">
       <h2 class="text-2xl font-bold mb-4">

@@ -27,7 +27,7 @@
     </button>
   </div>
   <div class="m-4">
-    <ul class="mb-4 flex flex-col gap-1">
+    <ul class=" flex flex-col gap-1">
       <li>
         <a
           routerLink="/estudiante/nota"
@@ -44,6 +44,26 @@
         </a>
       </li>
     </ul>
-    <ul class="mb-4 flex flex-col gap-1"></ul>
+    <ul class=" flex flex-col gap-1"></ul>
+  </div>
+    <div class="m-4">
+    <ul class="flex flex-col gap-1">
+      <li>
+        <a
+          routerLink="/estudiante/certificado"
+          routerLinkActive="bg-gradient-to-tr from-blue-600 to-blue-400 shadow-md shadow-blue-500/20 rounded-lg"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="block"
+        >
+          <button
+            class="middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white flex w-full items-center gap-4 px-4 capitalize"
+            type="button"
+          >
+            Certificado
+          </button>
+        </a>
+      </li>
+    </ul>
+    <ul class="flex flex-col gap-1"></ul>
   </div>
 </aside>

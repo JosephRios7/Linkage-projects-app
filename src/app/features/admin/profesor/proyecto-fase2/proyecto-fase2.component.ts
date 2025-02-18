@@ -6,7 +6,6 @@ import { NavigationStateService } from '../../../../services/navigation-state.se
 import { ConvocatoriaService } from '../../../../services/Convocatoria/convocatoria.service';
 import { ProyectosService } from '../../../../services/convocatoriaProyectos/proyectos.service';
 
-// Modelos (ajusta si fuera necesario)
 import { Convocatoria } from '../../../../models/convocatoria.model';
 
 @Component({
@@ -25,10 +24,6 @@ export class ProyectoFase2Component implements OnInit, OnDestroy {
   // Lista de proyectos del docente en Fase2 o Fase3
   proyectosFase2y3: any[] = [];
 
-  // Modal para ver documentos de un proyecto
-  modalVerDocsVisible: boolean = false;
-  proyectoConDocumentos: any = null;
-  documentosProyecto: any[] = [];
 
   // Modal para ver observaciones de un proyecto
   modalObservacionesVisible: boolean = false;
@@ -152,30 +147,67 @@ export class ProyectoFase2Component implements OnInit, OnDestroy {
     URL.revokeObjectURL(blobUrl);
   }
 
-  /**
-   * Ver documentos de un proyecto (abre modalVerDocsVisible)
-   */
-  verDocumentosProyecto(proyecto: any): void {
-    this.proyectoConDocumentos = proyecto;
-    this.documentosProyecto = []; // Limpia la lista
-    this.modalVerDocsVisible = true;
+  // /**
+  //  * Ver documentos de un proyecto (abre modalVerDocsVisible)
+  //  */
+  // verDocumentosProyecto(proyecto: any): void {
+  //   this.proyectoConDocumentos = proyecto;
+  //   this.documentosProyecto = []; // Limpia la lista
+  //   this.modalVerDocsVisible = true;
 
-    // Llama a un servicio que retorne los archivos del proyecto
-    this.proyectosService.obtenerDetalleProyecto(proyecto.id).subscribe({
-      next: (resp) => {
-        // Filtra archivos (p.e. si sólo quieres fase actual)
-        this.documentosProyecto = resp.proyecto.archivos || [];
+  //   // Llama a un servicio que retorne los archivos del proyecto
+  //   this.proyectosService.obtenerDetalleProyecto(proyecto.id).subscribe({
+  //     next: (resp) => {
+  //       // Filtra archivos (p.e. si sólo quieres fase actual)
+  //       this.documentosProyecto = resp.proyecto.archivos || [];
+  //     },
+  //     error: (err) => {
+  //       console.error('Error al obtener documentos del proyecto:', err);
+  //     },
+  //   });
+  // }
+
+  // cerrarModalVerDocs(): void {
+  //   this.modalVerDocsVisible = false;
+  //   this.proyectoConDocumentos = null;
+  //   this.documentosProyecto = [];
+  // }
+
+  // -------------------------------------------
+  //   VER DETALLE -> CARGAR EN EL FORM
+  // -------------------------------------------
+  verDetalle: boolean = false;
+
+  //codigo_proyecto numero_resolucion
+  misArchivosFase: any = [];
+  codigo_proyecto: any = null;
+  numero_resolucion: any = null;
+  verDetalleProyecto(proyecto: any): void {
+    this.verDetalle = true;
+
+    // 1. Llamar backend para obtener detalle (si hace falta)
+    this.convocatoriaService.obtenerDetalleProyecto(proyecto.id).subscribe({
+      next: (response) => {
+        const data = response.proyecto;
+        console.log(data);
+        this.codigo_proyecto = data.codigo_proyecto;
+        this.numero_resolucion = data.numero_resolucion;
+
+        // 2. Cargar archivos de la fase "Presentación de Propuestas"
+        //    (o si ya viene en data.archivos, filtrar)
+        this.misArchivosFase =
+          data.archivos?.filter(
+            (a: any) => a.fase?.nombre === 'Avance de Proyectos de Vinculación'
+          ) || [];
+
+        // 3. Si el estado es "correcciones", permitir "Corregir"
+        console.log(data.estado);
+        console.log(data.estado_fase);
       },
       error: (err) => {
-        console.error('Error al obtener documentos del proyecto:', err);
+        console.error('Error al obtener detalle del proyecto:', err);
       },
     });
-  }
-
-  cerrarModalVerDocs(): void {
-    this.modalVerDocsVisible = false;
-    this.proyectoConDocumentos = null;
-    this.documentosProyecto = [];
   }
 
   descargarDocumentoProyecto(archivo: any): void {

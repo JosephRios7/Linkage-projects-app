@@ -1,0 +1,105 @@
+<div
+  *ngFor="let certificado of certificados"
+  class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-4"
+>
+  <div class="flex flex-col md:flex-row gap-4">
+    <!-- Columna Izquierda: Imagen del PDF, Datos y botón para descargar el certificado -->
+    <div
+      class="flex-1 flex flex-col items-center border-r md:border-r-2 md:pr-4"
+    >
+      <!-- Imagen PDF -->
+      <div
+        class="w-16 h-16 bg-gray-200 rounded-full flex justify-center items-center mb-4"
+      >
+        <ng-container
+          *ngIf="
+            certificado.mime_type && certificado.mime_type.includes('pdf');
+            else otherIcon
+          "
+        >
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+            alt="PDF Icon"
+            class="w-10 h-10"
+          />
+        </ng-container>
+        <ng-template #otherIcon>
+          <img
+            src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+            alt="Document Icon"
+            class="w-10 h-10"
+          />
+        </ng-template>
+      </div>
+      <h3 class="font-semibold mb-2 text-center">
+        {{ certificado.proyecto?.nombre || "Proyecto no definido" }}
+      </h3>
+      <p class="text-center mb-2">
+        <strong>No. Certificado:</strong> {{ certificado.numero_certificado }}
+      </p>
+      <button
+        (click)="descargarArchivo(certificado)"
+        class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+      >
+        Descargar Certificado
+      </button>
+    </div>
+    <!-- Columna Derecha: Botón CSV y Tabla de notas de estudiantes -->
+    <div class="flex-1">
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm text-left">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 border-b">Nombre</th>
+              <th class="px-2 py-1 border-b">Apellido</th>
+              <th class="px-2 py-1 border-b">Cédula</th>
+              <!-- <th class="px-2 py-1 border-b">Género</th>
+              <th class="px-2 py-1 border-b">Correo</th>
+              <th class="px-2 py-1 border-b">Nota Docente</th>
+              <th class="px-2 py-1 border-b">Nota Admin</th> -->
+              <th class="px-2 py-1 border-b">Nota Final</th>
+              <th class="px-2 py-1 border-b">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let miembro of certificado.proyecto?.miembros">
+              <ng-container
+                *ngIf="
+                  miembro.role === 'estudiante' &&
+                  miembro.user &&
+                  miembro.user.estudiante
+                "
+              >
+                <td class="px-2 py-1 border-b">
+                  {{ miembro.user.estudiante.nombre }}
+                </td>
+                <td class="px-2 py-1 border-b">
+                  {{ miembro.user.estudiante.apellido }}
+                </td>
+                <td class="px-2 py-1 border-b">
+                  {{ miembro.user.estudiante.cedula }}
+                </td>
+                <!-- <td class="px-2 py-1 border-b">{{ miembro.user.estudiante.genero }}</td>
+                <td class="px-2 py-1 border-b">{{ miembro.user.estudiante.correo }}</td>
+                <td class="px-2 py-1 border-b">{{ miembro.user.estudiante.nota_docente }}</td>
+                <td class="px-2 py-1 border-b">{{ miembro.user.estudiante.nota_admin }}</td> -->
+                <td class="px-2 py-1 border-b">
+                  {{ miembro.user.estudiante.nota_final }}
+                </td>
+                <td class="px-2 py-1 border-b">
+                  {{ miembro.user.estudiante.estado }}
+                </td>
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button
+        (click)="descargarCSV()"
+        class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600 transition w-full text-center mb-2"
+      >
+        Descargar CSV de Estudiantes
+      </button>
+    </div>
+  </div>
+</div>

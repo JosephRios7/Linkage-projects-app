@@ -71,7 +71,6 @@
         <div class="flex space-x-2">
           <!-- Botón Editar -->
           <button
-            *ngIf="convocatoria.estado === 'Borrador'"
             class="px-2 py-1 bg-yellow-400 text-black rounded hover:bg-yellow-500"
             [routerLink]="['/panel/convocatorias/editar', convocatoria.id]"
           >

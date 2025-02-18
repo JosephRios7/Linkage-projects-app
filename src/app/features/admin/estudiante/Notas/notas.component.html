@@ -1,1 +1,27 @@
-<h1>Su nota es: </h1>
+<div class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto mb-2">
+  <h2 class="text-2xl font-bold text-gray-800 mb-2">
+    Su nota es:
+  </h2>
+  <table class="min-w-full mt-4 border">
+    <thead class="bg-gray-200">
+      <tr>
+        <!-- <th class="px-4 py-2 border">Nombre el Proyecto</th> -->
+        <!-- <th class="px-4 py-2 border">Estado actual del proyecto</th> -->
+        <th class="px-4 py-2 border">Nota Por Docente</th>
+        <th class="px-4 py-2 border">Nota Por Admin</th>
+        <th class="px-4 py-2 border">Nota Promediada</th>
+        <th class="px-4 py-2 border">Estado</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <!-- <td class="px-4 py-2 border">{{ proyecto.nombre }}</td> -->
+        <!-- <td class="px-4 py-2 border">{{ p.estado }}</td> -->
+        <td class="px-4 py-2 border text-center">{{user.estudiante.nota_docente}}</td>
+        <td class="px-4 py-2 border text-center">{{user.estudiante.nota_admin}}</td>
+        <td class="px-4 py-2 border text-center">{{user.estudiante.nota_final}}</td>
+        <td class="px-4 py-2 border uppercase text-center font-bold">{{user.estudiante.estado}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

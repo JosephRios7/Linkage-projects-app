@@ -19,6 +19,9 @@ import { ProyectosComponent } from './features/admin/convocatoriaProyectos/proye
 import { ProyectosDetalleComponent } from './features/admin/convocatoriaProyectos/proyectos-detalle/proyectos-detalle.component';
 import { ProyectoFase2Component } from './features/admin/profesor/proyecto-fase2/proyecto-fase2.component';
 import { ProyectoFase3Component } from './features/admin/profesor/proyecto-fase3/proyecto-fase3.component';
+import { CertificadosComponent } from './features/admin/profesor/certificados/certificados.component';
+import { CertificadosComponentEstudiante} from './features/admin/estudiante/certificados/certificados.component';
+import { CertificadoComponent } from './features/admin/certificados/certificado/certificado.component';
 //import { ProyectosComponent } from './features/admin/proyectos/proyectos.component';
 //import { ArchivosComponent } from './features/admin/archivos/archivos.component';
 //import { RepositorioComponent } from './features/admin/repositorio/repositorio.component';
@@ -46,7 +49,8 @@ export const routes: Routes = [
       { path: 'convocatorias/proyectos/:id', component: ProyectosComponent, data: { breadcrumb: 'Proyectos' }, },
       { path: 'proyectos/detalle/:id', component: ProyectosDetalleComponent, data: { breadcrumb: 'Proyecto detalle' }, },
             { path: 'convocatorias/editar/:id', component: ConvocatoriaCrearComponent, data: { breadcrumb: 'Editar Convocatoria' },},
-
+      //certificado
+      { path: 'users/certificados', component: CertificadoComponent, data: { breadcrumb: 'Proyectos certificado' }, },
  
 
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -68,6 +72,7 @@ export const routes: Routes = [
 
       { path: 'convocatorias/fase2/:id', component: ProyectoFase2Component, data: { breadcrumb: 'Fase 2' }, },
       { path: 'convocatorias/fase3/:id', component: ProyectoFase3Component, data: { breadcrumb: 'Fase 3' }, },
+      { path: 'certificados', component: CertificadosComponent, data: { breadcrumb: 'Certificados' }, },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },  
     ],
     
@@ -82,6 +87,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: AdminDashboardComponent, data: { breadcrumb: 'Dashboard' }, },
       { path: 'nota', component: NotasComponent, data: { breadcrumb: 'Listar Convocatorias' }, },
+      { path: 'certificado', component: CertificadosComponentEstudiante, data: { breadcrumb: 'Listar Convocatorias' }, },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },  
     ],
     

@@ -1,0 +1,50 @@
+<div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-2">
+  <h2 class="text-xl font-bold mb-4">Mi Certificado</h2>
+  <div
+    *ngIf="certificados && certificados.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+  >
+    <div
+      *ngFor="let certificado of certificados"
+      class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
+    >
+      <div class="flex justify-center mb-2">
+        <div
+          class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
+        >
+          <ng-container
+            *ngIf="certificado.mime_type && certificado.mime_type.includes('pdf'); else otherIcon"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+              alt="PDF Icon"
+              class="w-7 h-7"
+            />
+          </ng-container>
+          <ng-template #otherIcon>
+            <img
+              src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+              alt="Document Icon"
+              class="w-9 h-9"
+            />
+          </ng-template>
+        </div>
+      </div>
+      <h3 class="font-semibold mb-2 text-center flex-1">
+        {{ certificado.proyecto?.nombre || 'Proyecto no definido' }}
+      </h3>
+      <p class="text-center mb-2">
+        <strong>No. Certificado:</strong> {{ certificado.numero_certificado }}
+      </p>
+      <button
+        (click)="descargarArchivo(certificado)"
+        class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+      >
+        Descargar Certificado
+      </button>
+    </div>
+  </div>
+  <p *ngIf="!certificados || certificados.length === 0" class="text-center text-gray-600">
+    No se encontraron certificados.
+  </p>
+</div>

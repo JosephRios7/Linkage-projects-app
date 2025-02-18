@@ -1,65 +1,570 @@
 <div class="p-6 bg-gray-50 min-h-screen">
-    <div class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Formatos de cierre de proyectos</h2>
-      <form>
-        <!-- Resumen del Proyecto -->
-        <div class="mb-6">
-          <label class="block text-lg font-medium text-gray-700">Ingrese el resumen del Proyecto</label>
-          <textarea
-            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Escribe el resumen del proyecto"
-            rows="6"
-            required
-          ></textarea>
-        </div>
-  
-        <!-- Subir Archivos -->
-        <div class="mb-6">
-          <label class="block text-lg font-medium text-gray-700">Subir todos los archivos relacionado a esta fase</label>
+  <!-- Título principal de la Fase -->
+  <div class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto mb-2">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">
+      Fase 3: Cierre de Proyectos de Vinculación
+    </h2>
+    <p class="text-gray-600">
+      Aquí puedes consultar, escribir el resumen y subir archivos
+      correspondientes al cierre de tu proyecto.
+    </p>
+  </div>
+  <!-- Sección para mostrar archivos generales de la Fase2 (si los hay) -->
+  <div
+    *ngIf="archivosFase3 && archivosFase3.length > 0"
+    class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto mb-2"
+  >
+    <h3 class="text-xl font-bold mb-4 text-gray-800">
+      Archivos de Cierre de Proyectos Disponibles
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div
+        *ngFor="let archivo of archivosFase3"
+        class="bg-white p-3 rounded-lg shadow hover:shadow-xl transition flex flex-col justify-between"
+      >
+        <div class="flex justify-center mb-1">
           <div
-            id="dropzone"
-            class="flex flex-col items-center justify-center w-full h-32 mt-2 border-2 border-dashed border-gray-300 rounded-lg bg-gray-100 hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer"
-            onclick="document.getElementById('fileInput').click()"
+            class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
           >
-            <p class="text-gray-500 text-center">Haz clic o arrastra archivos a esta área para subirlos</p>
-            <p class="text-sm text-gray-500 mt-1">Formatos aceptados: PDF, DOC, DOCX</p>
-            <input
-              type="file"
-              id="fileInput"
-              name="documento[]"
-              class="hidden"
-              accept=".pdf, .doc, .docx"
-              multiple
-              onchange="handleFileInput(event)"
-            />
+            <ng-container
+              *ngIf="
+                archivo.mime_type && archivo.mime_type.includes('pdf');
+                else otherIcon
+              "
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+                alt="PDF Icon"
+                class="w-7 h-7"
+              />
+            </ng-container>
+            <ng-template #otherIcon>
+              <img
+                src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+                alt="Doc Icon"
+                class="w-7 h-7"
+              />
+            </ng-template>
           </div>
-          <ul id="fileList" class="mt-4 space-y-2"></ul>
         </div>
-  
-        <!-- Botón Guardar -->
-        <div class="text-right">
-          <button
-            type="submit"
-            class="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Guardar Resumen
-          </button>
-        </div>
-      </form>
+        <h4 class="font-semibold text-center flex-1">
+          {{ archivo.titulo }}
+        </h4>
+        <button
+          class="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition w-full text-center mt-2"
+          (click)="descargarArchivo(archivo)"
+        >
+          Descargar
+        </button>
+      </div>
     </div>
   </div>
-  
-  <script>
-    // Función para manejar archivos subidos
-    function handleFileInput(event) {
-      const fileList = event.target.files;
-      const list = document.getElementById('fileList');
-      list.innerHTML = '';
-      Array.from(fileList).forEach((file) => {
-        const listItem = document.createElement('li');
-        listItem.textContent = file.name;
-        listItem.classList.add('text-gray-700', 'text-sm');
-        list.appendChild(listItem);
-      });
-    }
-  </script>
+  <!-- Lista de proyectos del docente en Fase2 o Fase3 -->
+  <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Mis Proyectos</h3>
+    <table class="min-w-full border">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="px-4 py-2 border">Proyecto</th>
+          <th class="px-4 py-2 border">Fase</th>
+          <th class="px-4 py-2 border">Estado Fase</th>
+          <th class="px-4 py-2 border">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of proyectosFase3">
+          <td class="px-4 py-2 border">{{ p.nombre }}</td>
+          <td class="px-4 py-2 border">
+            @if (p.fase === 'Fase1') { Fase Presentación } @else if (p.fase ===
+            'Fase2'){ Fase Avance } @else if (p.fase === 'Fase3'){ Fase Cierre }
+          </td>
+          <td class="px-4 py-2 border">{{ p.estado_fase }}</td>
+          <td class="px-4 py-2 border">
+            <!-- Botón para ver documentos del proyecto -->
+            <!-- <button
+              *ngIf="
+                p.fase === 'Fase3' &&
+                (p.estado_fase === 'pendiente' || p.estado === 'correcciones')
+              "
+              class="bg-blue-500 text-white px-2 py-1 mr-2 rounded hover:bg-blue-600 mb-1"
+              (click)="verDetalleProyecto(p)"
+            >
+              Subir Datos
+            </button> -->
+            <button
+              *ngIf="p.fase === 'Fase3' && p.estado_fase !== 'pendiente'"
+              class="bg-blue-500 text-white px-2 py-1 mr-2 rounded hover:bg-blue-600 mb-1"
+              (click)="verDetalleProyecto(p)"
+            >
+              Ver Detalle
+            </button>
+            <!-- Botón para ver observaciones -->
+            <button
+              class="bg-purple-600 text-white px-2 py-1 mr-2 rounded hover:bg-purple-700 mb-1"
+              (click)="verObservaciones(p)"
+            >
+              Ver Observaciones
+            </button>
+
+            <!-- Botón para subir archivos sólo si está en Fase2 y la fase no está finalizada/aprobada -->
+            <!-- Botón para subir archivos en Fase3 (cuando el proyecto está en "enviado" o en "correcciones") -->
+            <button
+              *ngIf="
+                p.fase === 'Fase3' &&
+                (p.estado_fase === 'pendiente' || p.estado === 'correcciones')
+              "
+              (click)="verDetalleProyecto(p)"
+              class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+            >
+              <!-- Si está en correcciones, podrías cambiar el texto -->
+              {{
+                p.estado === "correcciones" ? "Corregir Avance" : "Subir Datos"
+              }}
+            </button>
+            <!-- <button
+              *ngIf="p.fase === 'Fase2' && p.estado_fase !== 'finalizada'"
+              class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+              (click)="abrirModalSubida(p)"
+            >
+              Subir Archivos
+            </button> -->
+            <!-- En Fase3, sólo visualización; no se muestra botón subir -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Bloque para mostrar los archivos de la fase "Avance" q subio el docente -->
+  <div
+    *ngIf="misArchivosFase && misArchivosFase.length > 0"
+    class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto m-2"
+  >
+    <h2 class="text-xl font-bold">
+      Archivos subidos para Avance de Proyectos de Vinculación
+    </h2>
+
+    <div
+      *ngIf="misArchivosFase && misArchivosFase.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+    >
+      <div
+        *ngFor="let archivo of misArchivosFase"
+        class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
+      >
+        <div class="flex justify-center mb-1">
+          <div
+            class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
+          >
+            <ng-container
+              *ngIf="
+                archivo['mime_type'] && archivo['mime_type'].includes('pdf');
+                else otherIcon
+              "
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+                alt="PDF Icon"
+                class="w-7 h-7"
+              />
+            </ng-container>
+            <ng-template #otherIcon>
+              <img
+                src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+                alt="Document Icon"
+                class="w-9 h-9"
+              />
+            </ng-template>
+          </div>
+        </div>
+        <h3 class="font-semibold mb-2 text-center flex-1">
+          {{ archivo.titulo }}
+        </h3>
+        <button
+          (click)="descargarArchivo(archivo.id!)"
+          class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+        >
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="verDetalle"
+    class="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto mt-2"
+  >
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">
+      Formatos de cierre de proyectos
+    </h2>
+    <div>
+      <label class="block text-sm font-medium">Código del proyecto</label>
+      <span
+        class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+      >
+        {{ codigo_proyecto }}
+      </span>
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Número de resolución</label>
+      <span
+        class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+      >
+        {{ numero_resolucion }}
+      </span>
+    </div>
+
+    <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+      <!-- Resumen del Proyecto -->
+      <div class="mb-6">
+        <label class="block text-lg font-medium text-gray-700"
+          >Resumen del Proyecto</label
+        >
+        <textarea
+          formControlName="resumen"
+          class="w-full border-gray-600 rounded-lg shadow-md focus:border-blue-500 p-4"
+          placeholder="Escribe el resumen del proyecto"
+          rows="6"
+        >
+        </textarea>
+        <!-- <div
+          *ngIf="
+            projectForm.get('resumen')?.touched &&
+            projectForm.get('resumen')?.invalid
+          "
+          class="text-red-500 text-sm"
+        >
+          El resumen es obligatorio.
+        </div> -->
+      </div>
+      <!-- <fieldset class="border rounded-md p-4">
+        <legend class="text-lg font-medium">Datos del Estudiante</legend>
+
+        <div formArrayName="estudiantes" class="space-y-6">
+          <div
+            *ngFor="let estudiante of estudiantes.controls; let i = index"
+            [formGroupName]="i"
+            class="border rounded-md p-4"
+          >
+            <div class="space-y-4">
+              <div>
+                <label for="estudianteNombre" class="block text-sm font-medium"
+                  >Nombre</label
+                >
+                <input
+                  [readOnly]="true"
+                  id="estudianteNombre"
+                  type="text"
+                  formControlName="nombre"
+                  class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="estudianteApellido" 
+                  class="block text-sm font-medium"
+                  >Apellido</label
+                >
+                <input
+                  [readOnly]="true"
+                  id="estudianteApellido"
+                  type="text"
+                  formControlName="apellido"
+                  class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                />
+              </div>
+
+              <div>
+                <label for="estudianteCedula" class="block text-sm font-medium"
+                  >Cédula</label
+                >
+                <input
+                  [readOnly]="true"
+                  id="estudianteCedula"
+                  type="text"
+                  formControlName="cedula"
+                  class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                />
+              </div>
+
+             <div>
+                <label for="estudianteGenero" class="block text-sm font-medium"
+                  >Género</label
+                >
+                <div
+                  id="estudianteGenero"
+                  class="mt-1 block w-full p-2 border rounded-md"
+                >
+                  {{
+                    estudiante.get("genero")?.value || "Género no disponible"
+                  }}
+                </div>
+              </div>
+
+              <div>
+                <label for="estudianteCorreo" class="block text-sm font-medium"
+                  >Correo</label
+                >
+                <input
+                  [readOnly]="true"
+                  id="estudianteCorreo"
+                  type="email"
+                  formControlName="correo"
+                  class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                />
+              </div>
+              <div>
+                <label for="estudianteNota" class="block text-sm font-medium"
+                  >Nota</label
+                >
+                <input
+                  id="estudianteNota"
+                  min="1"
+                  max="10"
+                  step="0.01"
+                  type="number"
+                  formControlName="nota_docente"
+                  class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                  required="true"
+                  (input)="validateNota($event)"
+                />
+                <div *ngIf="notaInvalida" class="text-red-500 text-sm mt-2">
+                  La nota debe estar entre 1 y 10 y puede tener hasta 2
+                  decimales.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset> -->
+<table class="min-w-full border-collapse border border-gray-300">
+  <thead>
+    <tr class="bg-gray-200">
+      <th class="border px-4 py-2">Nombre</th>
+      <th class="border px-4 py-2">Apellido</th>
+      <th class="border px-4 py-2">Cédula</th>
+      <th class="border px-4 py-2">Género</th>
+      <th class="border px-4 py-2">Correo</th>
+      <th class="border px-4 py-2">Nota Docente</th>
+    </tr>
+  </thead>
+  <tbody formArrayName="estudiantes">
+    <tr *ngFor="let estudiante of estudiantes.controls; let i = index" [formGroupName]="i">
+      <td class="border px-4 py-2">
+        <input type="text" formControlName="nombre" class="w-full  rounded" readonly />
+      </td>
+      <td class="border px-4 py-2">
+        <input type="text" formControlName="apellido" class="w-full  rounded" readonly />
+      </td>
+      <td class="border px-4 py-2">
+        <input type="text" formControlName="cedula" class="w-full  rounded" readonly />
+      </td>
+      <td class="border px-4 py-2">
+        <input type="text" formControlName="genero" class="w-full rounded" readonly />
+      </td>
+      <td class="border px-4 py-2">
+        <input type="email" formControlName="correo" class="w-full  rounded" readonly />
+      </td>
+      <td  class="border px-4 py-2">
+        <input type="number" formControlName="nota_docente" class="w-full  rounded"
+          min="1" max="10" step="0.01" (input)="validateNota($event)" />
+          <div *ngIf="notaInvalida" class="text-red-500 text-sm mt-2">
+                  La nota debe estar entre 1 y 10 y puede tener hasta 2
+                  decimales.
+                </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+      <!-- Subir Archivos -->
+      <div>
+        <label for="documentos" class="block text-sm font-medium"
+          >Subir Documentos</label
+        >
+        <input
+          id="documentos"
+          type="file"
+          accept=".doc, .docx"
+          (change)="onFileSelect($event)"
+          multiple
+          class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+        />
+      </div>
+      <!-- <div class="mb-6">
+        <label class="block text-lg font-medium text-gray-700"
+          >Subir todos los archivos relacionado a esta fase</label
+        >
+        <div
+          id="dropzone"
+          class="flex flex-col items-center justify-center w-full h-32 mt-2 border-2 border-dashed border-gray-300 rounded-lg bg-gray-100 hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer"
+          onclick="document.getElementById('fileInput').click()"
+        >
+          <p class="text-gray-500 text-center">
+            Haz clic o arrastra archivos a esta área para subirlos
+          </p>
+          <p class="text-sm text-gray-500 mt-1">
+            Formatos aceptados: PDF, DOC, DOCX
+          </p>
+          <input
+            type="file"
+            id="fileInput"
+            name="documento[]"
+            class="hidden"
+            accept=".pdf, .doc, .docx"
+            multiple
+            onchange="handleFileInput(event)"
+          />
+        </div>
+        <ul id="fileList" class="mt-4 space-y-2"></ul>
+      </div> -->
+
+      <!-- Botón Guardar -->
+      <div class="text-right mt-2">
+        <button
+          *ngIf="!editMode && proyectoSeleccionado.estado_fase !== 'subida'	&& proyectoSeleccionado.estado_fase !== 'finalizada'"
+          [disabled]="projectForm.invalid"
+          type="submit"
+          class="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full"
+        >
+          Guardar Resumen
+        </button>
+        <button
+          *ngIf="editMode"
+          type="submit"
+          [disabled]="projectForm.invalid"
+          class="mt-2 w-full bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 disabled:opacity-50 shadow-md"
+        >
+          Corregir Fase
+        </button>
+
+              <!-- Mensajes de Retroalimentación -->
+      <div
+        *ngIf="enviadoCorrectamente !== null"
+        [ngClass]="
+          enviadoCorrectamente
+            ? 'bg-green-500 text-white'
+            : 'bg-red-500 text-white'
+        "
+        class="fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md shadow-lg flex items-center space-x-2 z-50"
+      >
+        <svg
+          *ngIf="enviadoCorrectamente"
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2l4-4m1 5a7 7 0 110-14 7 7 0 010 14z"
+          />
+        </svg>
+        <svg
+          *ngIf="!enviadoCorrectamente"
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+        <span>
+          {{
+            enviadoCorrectamente
+              ? "El formulario se envió correctamente."
+              : "Ocurrió un error al enviar el formulario. Inténtalo de nuevo."
+          }}
+        </span>
+      </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal para Observaciones -->
+<div
+  *ngIf="modalObservacionesVisible"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 modal"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl">
+    <h2 class="text-2xl font-bold mb-4">
+      Observaciones de {{ proyectoConObservaciones?.nombre }}
+    </h2>
+
+    <!-- Tabla de observaciones -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full border">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2 border">Comentario</th>
+            <th class="px-4 py-2 border">Estado</th>
+            <th class="px-4 py-2 border">Archivos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let obs of observaciones">
+            <td class="px-4 py-2 border">{{ obs.comentario }}</td>
+            <td class="px-4 py-2 border">{{ obs.estado }}</td>
+            <td class="px-4 py-2 border">
+              <!-- Listar archivos de la observación -->
+              <div *ngIf="obs.archivos && obs.archivos.length > 0">
+                <div
+                  *ngFor="let archivo of obs.archivos"
+                  class="flex space-x-2 items-center mb-2"
+                >
+                  <span class="text-sm text-gray-700">{{
+                    archivo.titulo
+                  }}</span>
+                  <button
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
+                    (click)="descargarArchivo(archivo)"
+                  >
+                    Descargar
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="!obs.archivos || obs.archivos.length === 0">
+                <em class="text-gray-500">Sin archivos</em>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Botón para cerrar el modal -->
+    <div class="flex justify-end mt-4">
+      <button
+        class="bg-gray-500 text-white px-4 py-2 rounded"
+        (click)="cerrarModalObservaciones()"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Función para manejar archivos subidos
+  function handleFileInput(event) {
+    const fileList = event.target.files;
+    const list = document.getElementById("fileList");
+    list.innerHTML = "";
+    Array.from(fileList).forEach((file) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = file.name;
+      listItem.classList.add("text-gray-700", "text-sm");
+      list.appendChild(listItem);
+    });
+  }
+</script>

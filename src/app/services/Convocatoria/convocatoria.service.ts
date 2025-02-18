@@ -72,6 +72,36 @@ export class ConvocatoriaService {
   }
 
   /**
+   * Listar las convocatorias finalizadas
+   */
+  listarConvocatoriasPublicasFinalizadas(): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.http.get(
+      `${this.apiUrl}/convocatorias/publicadas-finalizadas`,
+      {
+        headers,
+      }
+    );
+  }
+
+  /**
+   * Obtener los miembros de un proyecto junto con su certificado
+   * @param projectId ID del proyecto seleccionado
+   */
+  getMiembrosConCertificados(projectId: number): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.http.get(
+      `${this.apiUrl}/proyectos/${projectId}/miembros-certificados`,
+      { headers } 
+    );
+  }
+  /**
    * Listar convocatorias publicadas profesor
    */
   listarConvocatoriasPublicadas(): Observable<any> {
@@ -148,7 +178,7 @@ export class ConvocatoriaService {
       headers,
     });
   }
-  
+
   //endregion
   //region convocatoria
   /**

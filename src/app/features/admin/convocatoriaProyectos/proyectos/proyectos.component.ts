@@ -57,6 +57,31 @@ export class ProyectosComponent implements OnInit {
         },
       });
   }
+  searchTerm: string = '';
+  refrescarProyectos(): void {
+    // Aquí puedes recargar la lista desde el servidor
+    this.cargarProyectos();
+    // Opcionalmente, limpiar el campo de búsqueda:
+    // this.searchTerm = '';
+  }
+
+  // Propiedad computada para filtrar los proyectos
+  get filteredProyectos(): any[] {
+    if (!this.searchTerm) {
+      return this.proyectos;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return this.proyectos.filter(
+      (proyecto) =>
+        proyecto.estado.toLowerCase().includes(term) ||
+        proyecto.nombre.toLowerCase().includes(term) ||
+        proyecto.carrera.toLowerCase().includes(term) ||
+        (proyecto.fasePresentacion &&
+          proyecto.fasePresentacion.toLowerCase().includes(term)) ||
+        proyecto.modalidad.toLowerCase().includes(term)
+      // Agrega más campos si es necesario
+    );
+  }
 
   /**
    * Abre la ventana modal para aprobar un proyecto
@@ -143,7 +168,9 @@ export class ProyectosComponent implements OnInit {
           this.proyectoSeleccionado.codigo_proyecto = this.codigoProyecto;
           this.proyectoSeleccionado.numero_resolucion = this.numeroResolucion;
           this.cerrarModal();
-          this.mostrarToast('Proyecto aprobado correctamente (Fase1).');
+          this.mostrarToast(
+            'Proyecto aprobado correctamente (Fase Presentación).'
+          );
           this.cdr.detectChanges();
           // Si deseas, recargar la lista:
           // this.cargarProyectos();

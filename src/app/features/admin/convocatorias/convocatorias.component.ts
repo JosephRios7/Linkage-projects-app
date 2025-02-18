@@ -214,46 +214,7 @@ export class ConvocatoriasComponent implements OnInit {
     this.mostrarModal = true;
   }
 
-  // abrirModalConvocatoria(convocatoria: any): void {
-  //   // Asignar la convocatoria actual
-  //   this.convocatoriaActual = convocatoria;
-  //   // Reiniciar arrays previos
-  //   this.archivosConvocatoria = [];
-  //   this.fases = [];
 
-  //   // Cargar archivos de la convocatoria
-  //   this.archivoService.listarArchivosConvocatoria(convocatoria.id).subscribe({
-  //     next: (data) => {
-  //       this.archivosConvocatoria = data;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error al cargar archivos de convocatoria:', err);
-  //     },
-  //   });
-
-  //   // Si la convocatoria tiene fases, asignarlas y cargar sus archivos
-  //   if (convocatoria.fases && Array.isArray(convocatoria.fases)) {
-  //     // Se asignan las fases tal cual, y luego para cada fase se cargarán sus archivos
-  //     this.fases = convocatoria.fases;
-  //     this.fases.forEach((fase: any, index: number) => {
-  //       this.archivoService.listarArchivosFase(fase.id).subscribe({
-  //         next: (data) => {
-  //           // Asigna los archivos obtenidos a la propiedad "archivos" de la fase
-  //           this.fases[index].archivos = data;
-  //         },
-  //         error: (err) => {
-  //           console.error(
-  //             `Error al cargar archivos para la fase ${fase.id}:`,
-  //             err
-  //           );
-  //         },
-  //       });
-  //     });
-  //   }
-
-  //   // Abrir el modal de documentos
-  //   this.mostrarModal = true;
-  // }
 
   // Método para cerrar el modal
   cerrarModal(): void {
@@ -274,31 +235,6 @@ export class ConvocatoriasComponent implements OnInit {
   mostrarConfirmacionArchivo: boolean = false;
   mensajeConfirmacionArchivo: string = '';
 
-  // cargarDatosArchivos(): void {
-  //   // Supongamos que convocatoriaActual ya tiene un id y un array de fases.
-  //   if (this.convocatoriaActual) {
-  //     // Cargar archivos de convocatoria
-  //     this.archivoService
-  //       .listarArchivosConvocatoria(this.convocatoriaActual.id)
-  //       .subscribe({
-  //         next: (data) => {
-  //           this.archivosConvocatoria = data;
-  //         },
-  //         error: (err) => console.error(err),
-  //       });
-
-  //     // Para cada fase, cargar sus archivos y asignarlos a la fase
-  //     this.fases = this.convocatoriaActual.fases || [];
-  //     this.fases.forEach((fase: any, index: number) => {
-  //       this.archivoService.listarArchivosFase(fase.id).subscribe({
-  //         next: (data) => {
-  //           this.fases[index].archivos = data;
-  //         },
-  //         error: (err) => console.error(err),
-  //       });
-  //     });
-  //   }
-  // }
 
   // Métodos para descargar
 

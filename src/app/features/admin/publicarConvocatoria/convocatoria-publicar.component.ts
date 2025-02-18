@@ -4,6 +4,7 @@ import { ConvocatoriaService } from '../../../services/Convocatoria/convocatoria
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Convocatoria } from '../../../models/convocatoria.model';
 @Component({
   selector: 'app-convocatoria-crear',
   templateUrl: './convocatoria-publicar.component.html',
@@ -48,6 +49,9 @@ export class ConvocatoriaCrearComponent implements OnInit {
       this.isEdit = false;
       this.agregarFasesIniciales(); // Como ya tienes en el constructor, puede mantenerse así
     }
+    this.listarConvocatorias();
+    console.log("Listar convoc");
+    this.canCretateCovocatoria();
   }
 
   isEdit = false;
@@ -104,43 +108,26 @@ export class ConvocatoriaCrearComponent implements OnInit {
     });
   }
 
-  // onFileChange(event: any): void {
-  //   const files = event.target.files;
-  //   if (files && files.length > 0) {
-  //     const nuevos = Array.from(files).map((file) => file as File);
-  //     // Opcional: eliminar duplicados por nombre y tamaño, por ejemplo
-  //     nuevos.forEach((archivo) => {
-  //       const yaExiste = this.archivos.some(
-  //         (a) => a.name === archivo.name && a.size === archivo.size
-  //       );
-  //       if (!yaExiste) {
-  //         this.archivos.push(archivo);
-  //       }
-  //     });
-  //   }
-  // }
-
   onFileChange(event: any): void {
-  const files = event.target.files;
-  if (files && files.length > 0) {
-    const nuevos = Array.from(files) as File[];
-    nuevos.forEach((archivo) => {
-      // Validar que el tamaño del archivo no exceda 5MB (5 * 1024 * 1024 bytes)
-      if (archivo.size > 5 * 1024 * 1024) {
-        this.mensajeError = `El archivo ${archivo.name} supera el límite de 5MB.`;
-        return; // O bien, podrías usar continue si estás dentro de un loop for clásico
-      }
-      // Verificar duplicados basados en nombre y tamaño
-      const yaExiste = this.archivos.some(
-        (a) => a.name === archivo.name && a.size === archivo.size
-      );
-      if (!yaExiste) {
-        this.archivos.push(archivo);
-      }
-    });
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const nuevos = Array.from(files) as File[];
+      nuevos.forEach((archivo) => {
+        // Validar que el tamaño del archivo no exceda 5MB (5 * 1024 * 1024 bytes)
+        if (archivo.size > 10 * 1024 * 1024) {
+          this.mensajeError = `El archivo ${archivo.name} supera el límite de 10MB.`;
+          return; // O bien, podrías usar continue si estás dentro de un loop for clásico
+        }
+        // Verificar duplicados basados en nombre y tamaño
+        const yaExiste = this.archivos.some(
+          (a) => a.name === archivo.name && a.size === archivo.size
+        );
+        if (!yaExiste) {
+          this.archivos.push(archivo);
+        }
+      });
+    }
   }
-}
-
 
   onDropFase(event: DragEvent, faseIndex: number): void {
     event.preventDefault();
@@ -266,71 +253,6 @@ export class ConvocatoriaCrearComponent implements OnInit {
     return true;
   }
 
-  // guardarConvocatoria(): void {
-  //   this.mensajeExito = '';
-  //   this.mensajeError = '';
-  //   this.mensajeAdvertencia = '';
-
-  //   if (!this.validarFechas()) {
-  //     return;
-  //   }
-
-  //   if (this.convocatoriaForm.valid) {
-  //     this.cargando = true;
-  //     const formData = new FormData();
-  //     formData.append('titulo', this.convocatoriaForm.get('titulo')?.value);
-  //     formData.append(
-  //       'descripcion',
-  //       this.convocatoriaForm.get('descripcion')?.value
-  //     );
-  //     formData.append(
-  //       'fecha_inicio',
-  //       this.convocatoriaForm.get('fecha_inicio')?.value
-  //     );
-  //     formData.append(
-  //       'fecha_fin',
-  //       this.convocatoriaForm.get('fecha_fin')?.value
-  //     );
-
-  //     // Adjuntar archivos generales de la convocatoria
-  //     this.archivos.forEach((archivo, index) => {
-  //       formData.append(`files[${index}]`, archivo);
-  //     });
-
-  //     // Adjuntar las fases y sus archivos
-  //     this.fases.controls.forEach((faseControl, i) => {
-  //       const fase = faseControl.value;
-  //       formData.append(`fases[${i}][nombre]`, fase.nombre);
-  //       formData.append(`fases[${i}][estado]`, String(fase.estado));
-  //       formData.append(`fases[${i}][resumen]`, fase.resumen);
-  //       formData.append(`fases[${i}][fecha_inicio]`, fase.fecha_inicio);
-  //       formData.append(`fases[${i}][fecha_fin]`, fase.fecha_fin);
-
-  //       // ✅ Asegurar que los archivos se envían correctamente
-  //       if (fase.archivos && fase.archivos.length > 0) {
-  //         fase.archivos.forEach((archivo: File, j: number) => {
-  //           formData.append(`fases[${i}][archivos][]`, archivo);
-  //         });
-  //       }
-  //     });
-
-  //     this.convocatoriaService.guardarConvocatoria(formData).subscribe({
-  //       next: () => {
-  //         this.cargando = false;
-  //         this.convocatoriaForm.reset();
-  //         this.archivos = [];
-  //         this.mensajeExito = 'Convocatoria guardada exitosamente!';
-  //       },
-  //       error: (error) => {
-  //         this.cargando = false;
-  //         this.mensajeError = `Error al guardar la convocatoria: ${error.error.message}`;
-  //       },
-  //     });
-  //   } else {
-  //     this.mensajeAdvertencia =
-  //       'Por favor, completa todos los campos correctamente.';
-  //   }
-  // }
   guardarConvocatoria(): void {
     this.mensajeExito = '';
     this.mensajeError = '';
@@ -339,6 +261,18 @@ export class ConvocatoriaCrearComponent implements OnInit {
     // Validar Fechas
     if (!this.validarFechas()) {
       return;
+    }
+
+    // Validar que todas las fases tengan al menos un archivo
+    for (let i = 0; i < this.fases.length; i++) {
+      const fase = this.fases.at(i);
+      const archivos = fase.get('archivos')?.value;
+      if (!archivos || archivos.length === 0) {
+        this.mensajeAdvertencia = `La fase "${
+          fase.get('nombre')?.value
+        }" debe contener al menos un archivo.`;
+        return;
+      }
     }
 
     if (this.convocatoriaForm.valid) {
@@ -428,4 +362,41 @@ export class ConvocatoriaCrearComponent implements OnInit {
         'Por favor, completa todos los campos correctamente.';
     }
   }
+  convocatorias: any[] = [];
+
+  listarConvocatorias(): void {
+    this.convocatoriaService.listarConvocatorias().subscribe({
+      next: (response) => {
+        if (Array.isArray(response)) {
+          this.convocatorias = response;
+          console.log(this.convocatorias);
+        } else {
+          console.error('Datos de convocatorias no válidos:', response);
+          this.convocatorias = [];
+        }
+      },
+      error: (err) => {
+        console.error('Error al listar convocatorias:', err);
+      },
+    });
+  }
+
+  public canCretateCovocatoria(): boolean {
+    console.log('funcionar');
+        if (
+          this.convocatorias &&
+          this.convocatorias.length > 0
+        ) {
+          // se permite crear uno nuevo solo si TODOS están finalizados
+          if (this.convocatorias.length > 0) {
+            const proyectosActivos = this.convocatorias.filter(
+              (c) => c.estado !== 'finalizado'
+            );
+            console.log(proyectosActivos.length === 0);
+            return proyectosActivos.length === 0;
+          }
+        }
+    return true;
+  }
+
 }

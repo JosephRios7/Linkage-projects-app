@@ -1,6 +1,17 @@
 <div class="p-8 bg-gray-50 min-h-screen">
   <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
     {{ proyecto?.nombre }}
+    <span class="text-green-700">
+      <ng-container [ngSwitch]="proyecto?.fase">
+      <span *ngSwitchCase="'Fase1'">Fase Presentación </span>
+      <span *ngSwitchCase="'Fase2'">Fase Avance </span>
+      <span *ngSwitchCase="'Fase3'">Fase Cierre </span>
+      <span *ngSwitchDefault>Sin fase</span>
+    </ng-container>
+    </span>
+    <span class="bg-amber-500/100 rounded text-white px-1">
+      {{ proyecto?.estado_fase }}
+    </span>
   </h1>
 
   <div *ngIf="proyecto" class="space-y-8">
@@ -10,6 +21,14 @@
         Detalles del Proyecto
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
+        <h3 *ngIf="proyecto?.numero_resolucion">
+          <strong>Código del proyecto:</strong>
+          {{ proyecto?.codigo_proyecto }}
+        </h3>
+        <h3 *ngIf="proyecto?.numero_resolucion">
+          <strong>Número de resolución:</strong>
+          {{ proyecto?.numero_resolucion }}
+        </h3>
         <p><strong>Dominio:</strong> {{ proyecto?.dominio }}</p>
         <p><strong>Fase:</strong> {{ proyecto?.fase }}</p>
         <p>
@@ -25,149 +44,203 @@
         <p><strong>Carrera:</strong> {{ proyecto?.carrera }}</p>
         <p><strong>Modalidad:</strong> {{ proyecto?.modalidad }}</p>
       </div>
+      <div *ngIf="proyecto?.resumen" class="gap-4 text-gray-600 mt-3">
+        <p><strong>Resumen:</strong></p>
+        <textarea [readOnly]="true" class="w-full">
+  {{ proyecto?.resumen }}</textarea
+        >
+      </div>
     </div>
-    
+
     <!-- Docente Coordinador -->
     <div *ngIf="docenteCoordinador" class="bg-white shadow rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700">Docente Coordinador</h2>
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">
+        Docente Coordinador
+      </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
         <!-- Utilizamos la propiedad "detalles" para mostrar los datos del docente -->
-        <p><strong>Nombre:</strong> {{ docenteCoordinador.detalles?.nombre }}</p>
-        <p><strong>Apellido:</strong> {{ docenteCoordinador.detalles?.apellido }}</p>
-        <p><strong>Cédula:</strong> {{ docenteCoordinador.detalles?.cedula }}</p>
-        <p><strong>Correo:</strong> {{ docenteCoordinador.detalles?.correo }}</p>
-        <p><strong>Teléfono:</strong> {{ docenteCoordinador.detalles?.telefono }}</p>
+        <p>
+          <strong>Nombre:</strong> {{ docenteCoordinador.detalles?.nombre }}
+        </p>
+        <p>
+          <strong>Apellido:</strong> {{ docenteCoordinador.detalles?.apellido }}
+        </p>
+        <p>
+          <strong>Cédula:</strong> {{ docenteCoordinador.detalles?.cedula }}
+        </p>
+        <p>
+          <strong>Correo:</strong> {{ docenteCoordinador.detalles?.correo }}
+        </p>
+        <p>
+          <strong>Teléfono:</strong> {{ docenteCoordinador.detalles?.telefono }}
+        </p>
       </div>
     </div>
 
     <!-- Estudiantes -->
-    <div *ngIf="estudiantes?.length" class="bg-white shadow rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700">Estudiantes</h2>
-      <ul class="space-y-4">
-        <li
-          *ngFor="let estudiante of estudiantes"
-          class="border rounded-lg p-4 bg-gray-50 shadow-sm"
-        >
-          <!-- Mostramos los datos obtenidos en "detalles" para cada estudiante -->
-          <p><strong>Nombre:</strong> {{ estudiante.detalles?.nombre }}</p>
-          <p><strong>Apellido:</strong> {{ estudiante.detalles?.apellido }}</p>
-          <p><strong>Cédula:</strong> {{ estudiante.detalles?.cedula }}</p>
-          <p><strong>Género:</strong> {{ estudiante.detalles?.genero }}</p>
-          <p><strong>Correo:</strong> {{ estudiante.detalles?.correo }}</p>
-        </li>
-      </ul>
-    </div>
-
-
-    <!-- Documentos -->
-    <!-- <div class="bg-white shadow rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700">Documentos</h2>
-
-      <div
-      *ngIf="proyecto.archivos && proyecto.archivos.length > 0"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4"
-    >
-      <div
-        *ngFor="let archivo of proyecto.archivos"
-        class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
-      >
-        <div class="flex justify-center mb-1">
-          <div
-            class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-          >
-            <ng-container
-              *ngIf="
-                archivo['mime_type'] && archivo['mime_type'].includes('pdf');
-                else otherIcon
-              "
-            >
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
-                alt="PDF Icon"
-                class="w-7 h-7"
-              />
-            </ng-container>
-            <ng-template #otherIcon>
-              <img
-                src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
-                alt="Document Icon"
-                class="w-9 h-9"
-              />
-            </ng-template>
-          </div>
-        </div>
-        <h3 class="font-semibold mb-2 text-center flex-1">
-          {{ archivo.titulo }}
-        </h3>
-        <button
-        (click)="descargarArchivoProyecto(archivo.id!)"
-        class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
-      >
-        Descargar
-      </button>
-      </div>
-    </div>
-    </div> -->
-    
-<!-- Documentos: Agrupados por Fase -->
-<div class="bg-white shadow rounded-lg p-6">
-  <h2 class="text-2xl font-semibold mb-4 text-gray-700">Documentos por Fase</h2>
-
-  <!-- Verificar si hay al menos un grupo de archivos -->
-  <div *ngIf="proyecto.archivos && proyecto.archivos.length > 0; else sinArchivos">
-    
-    <!-- Obtenemos las claves (nombres de fase) del objeto archivosPorFase -->
-    <div *ngFor="let nombreFase of getFaseNombres()">
-      <h3 class="font-bold text-lg mb-2 text-blue-700">{{ nombreFase }}</h3>
-
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4"
-      >
-        <div
-          *ngFor="let archivo of archivosPorFase[nombreFase]"
-          class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
-        >
-          <div class="flex justify-center mb-1">
-            <div class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center">
-              <ng-container *ngIf="archivo['mime_type'] && archivo['mime_type'].includes('pdf'); else otherIcon">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
-                  alt="PDF Icon"
-                  class="w-7 h-7"
-                />
-              </ng-container>
-              <ng-template #otherIcon>
-                <img
-                  src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
-                  alt="Document Icon"
-                  class="w-9 h-9"
-                />
-              </ng-template>
+   <!-- Tabla de estudiantes -->
+<div *ngIf="estudiantes?.length" class="bg-white shadow rounded-lg p-6">
+  <h2 class="text-2xl font-semibold mb-4 text-gray-700">Estudiantes</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse border border-gray-200">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="border border-gray-300 px-4 py-2">Nombre</th>
+          <th class="border border-gray-300 px-4 py-2">Apellido</th>
+          <th class="border border-gray-300 px-4 py-2">Cédula</th>
+          <th class="border border-gray-300 px-4 py-2">Género</th>
+          <th class="border border-gray-300 px-4 py-2">Correo</th>
+          <!-- Columna de Calificación Docente siempre visible en Fase3 -->
+          <th *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase !== 'pendiente'" class="border border-gray-300 px-4 py-2">
+            Nota Docente
+          </th>
+          <!-- Si el proyecto está finalizado se muestra la nota final -->
+          <th *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase === 'finalizada'" class="border border-gray-300 px-4 py-2">
+            Nota Admin
+          </th>
+          <th *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase === 'finalizada'" class="border border-gray-300 px-4 py-2">
+            Nota Final
+          </th>
+          <!-- Si no está finalizado y no está pendiente, se muestra el input para nota_admin -->
+          <th *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase !== 'pendiente' && proyecto?.estado_fase !== 'finalizada'" class="border border-gray-300 px-4 py-2">
+            Nota Admin
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let estudiante of estudiantes" class="odd:bg-gray-50 even:bg-white">
+          <td class="border border-gray-300 px-4 py-2">
+            {{ estudiante.detalles?.nombre }}
+          </td>
+          <td class="border border-gray-300 px-4 py-2">
+            {{ estudiante.detalles?.apellido }}
+          </td>
+          <td class="border border-gray-300 px-4 py-2">
+            {{ estudiante.detalles?.cedula }}
+          </td>
+          <td class="border border-gray-300 px-4 py-2">
+            {{ estudiante.detalles?.genero }}
+          </td>
+          <td class="border border-gray-300 px-4 py-2">
+            {{ estudiante.detalles?.correo }}
+          </td>
+          <!-- Mostrar nota docente -->
+          <td *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase !== 'pendiente'" class="border border-gray-300 px-4 py-2 text-center">
+            {{ estudiante.detalles?.nota_docente }}
+          </td>
+                    <!-- Si proyecto está finalizado, mostrar nota_admin en lugar del input -->
+          <td *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase === 'finalizada'" class="border border-gray-300 px-4 py-2 text-center">
+            {{ estudiante.detalles?.nota_admin }}
+          </td>
+          <!-- Si proyecto está finalizado, mostrar nota_final en lugar del input -->
+          <td *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase === 'finalizada'" class="border border-gray-300 px-4 py-2 text-center">
+            {{ estudiante.detalles?.nota_final }}
+          </td>
+          <!-- Si no está finalizado, permitir editar la nota administrativa -->
+          <td *ngIf="proyecto?.fase === 'Fase3' && proyecto?.estado_fase !== 'pendiente' && proyecto?.estado_fase !== 'finalizada'" class="border border-gray-300 px-4 py-2 text-center">
+            <input
+              id="estudianteNotaAdmin{{ estudiante.detalles.id }}"
+              min="1"
+              max="10"
+              step="0.01"
+              type="number"
+              [(ngModel)]="estudiante.detalles.nota_admin"
+              name="notaAdmin{{ estudiante.detalles.id }}"
+              class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+              required
+              (input)="validateNota($event)"
+            />
+            <div *ngIf="notaInvalida" class="text-red-500 text-sm mt-2">
+              La nota debe estar entre 1 y 10 y puede tener hasta 2 decimales.
             </div>
-          </div>
-          <h3 class="font-semibold mb-0 text-center flex-1">
-            {{ archivo.titulo }}
-          </h3>
-                <p class="text-gray-500 text-sm mt-0">Subido: {{ archivo.created_at | date:'short' }}</p>
-
-          <button
-            (click)="descargarArchivoProyecto(archivo.id!)"
-            class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
-          >
-            Descargar
-          </button>
-        </div>
-      </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- Botón para finalizar proyecto solo si aún se permite editar notas -->
+    <div *ngIf="proyecto?.estado_fase !== 'finalizada'" class="mt-6">
+      <button (click)="finalizarProyecto()" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
+        Finalizar Proyecto
+      </button>
     </div>
   </div>
-
-  <!-- Texto alternativo si no hay archivos -->
-  <ng-template #sinArchivos>
-    <p class="text-gray-500">
-      No hay archivos cargados para este proyecto.
-    </p>
-  </ng-template>
 </div>
+
+    <!-- Documentos: Agrupados por Fase -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">
+        Documentos por Fase
+      </h2>
+
+      <!-- Verificar si hay al menos un grupo de archivos -->
+      <div
+        *ngIf="
+          proyecto.archivos && proyecto.archivos.length > 0;
+          else sinArchivos
+        "
+      >
+        <!-- Obtenemos las claves (nombres de fase) del objeto archivosPorFase -->
+        <div *ngFor="let nombreFase of getFaseNombres()">
+          <h3 class="font-bold text-lg mb-2 text-blue-700">{{ nombreFase }}</h3>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4"
+          >
+            <div
+              *ngFor="let archivo of archivosPorFase[nombreFase]"
+              class="bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition flex flex-col justify-between"
+            >
+              <div class="flex justify-center mb-1">
+                <div
+                  class="w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
+                >
+                  <ng-container
+                    *ngIf="
+                      archivo['mime_type'] &&
+                        archivo['mime_type'].includes('pdf');
+                      else otherIcon
+                    "
+                  >
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/179/179483.png"
+                      alt="PDF Icon"
+                      class="w-7 h-7"
+                    />
+                  </ng-container>
+                  <ng-template #otherIcon>
+                    <img
+                      src="https://png.pngtree.com/element_our/md/20180627/md_5b33460fe6357.png"
+                      alt="Document Icon"
+                      class="w-9 h-9"
+                    />
+                  </ng-template>
+                </div>
+              </div>
+              <h3 class="font-semibold mb-0 text-center flex-1">
+                {{ archivo.titulo }}
+              </h3>
+              <p class="text-gray-500 text-sm mt-0">
+                Subido: {{ archivo.created_at | date : "short" }}
+              </p>
+
+              <button
+                (click)="descargarArchivoProyecto(archivo.id!)"
+                class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600 transition w-full text-center"
+              >
+                Descargar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Texto alternativo si no hay archivos -->
+      <ng-template #sinArchivos>
+        <p class="text-gray-500">
+          No hay archivos cargados para este proyecto.
+        </p>
+      </ng-template>
+    </div>
 
     <div *ngIf="!proyecto" class="text-gray-500 text-center mt-8">
       Cargando detalles del proyecto...

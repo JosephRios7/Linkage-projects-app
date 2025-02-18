@@ -12,6 +12,7 @@ import { NavigationStateService } from '../../../../services/navigation-state.se
 import { CommonModule } from '@angular/common';
 import { ArchivoService } from '../../../../services/ConvocatoriaArchivoService/archivo.service';
 import { ProyectosService } from '../../../../services/convocatoriaProyectos/proyectos.service';
+import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-proyecto',
@@ -41,7 +42,8 @@ export class ProyectoComponent implements OnInit, OnDestroy {
     private navigationStateService: NavigationStateService,
     private archivoService: ArchivoService,
     private cdr: ChangeDetectorRef,
-    private proyectosService: ProyectosService
+    private proyectosService: ProyectosService,
+    private authService: AuthService // <-- inyectamos el servicio
   ) {
     this.projectForm = this.fb.group({
       convocatoria_id: ['', Validators.required],
@@ -73,14 +75,30 @@ export class ProyectoComponent implements OnInit, OnDestroy {
   descargarArchivoFase(archivoId: number): void {
     this.archivoService.descargarArchivoFase(archivoId);
   }
+
+  cargandoDatos: boolean = false;
+
   ngOnInit(): void {
+    //cargar docente
+    const user = this.authService.getUser(); // Método que retorna los datos del docente en sesión
+    if (user) {
+      console.log(user);
+      this.projectForm.patchValue({
+        docente_coordinador: {
+          nombre: user.docente?.nombre || user.name,
+          apellido: user.docente?.apellido || '',
+          cedula: user.docente?.cedula || '',
+          telefono: user.docente?.telefono || '',
+          correo: user.docente?.correo || user.email,
+        },
+      });
+    }
+
     // 2. Cargar proyectos existentes del profesor
     // (Asumiendo que hay un endpoint o método para ello)
     this.cargarProyectosDelProfesor();
     this.canCreateProject();
-
-    // Al cambiar la facultad, actualizamos las carreras disponibles y reseteamos la carrera elegida
-    // Suscribirse al cambio de la facultad usando projectForm
+    // Suscripción que actualiza carreras y resetea carrera solo si no se están cargando datos
     this.projectForm
       .get('facultad')
       ?.valueChanges.subscribe((selectedFacultadNombre) => {
@@ -90,8 +108,10 @@ export class ProyectoComponent implements OnInit, OnDestroy {
         this.carrerasDisponibles = facultadSeleccionada
           ? facultadSeleccionada.carreras
           : [];
-        // Reseteamos el control "carrera" del projectForm
-        this.projectForm.get('carrera')?.setValue('');
+        if (!this.cargandoDatos) {
+          // Solo resetea si el usuario hace el cambio manualmente
+          this.projectForm.get('carrera')?.setValue('');
+        }
       });
 
     // Obtener el ID de la convocatoria desde la URL
@@ -101,6 +121,7 @@ export class ProyectoComponent implements OnInit, OnDestroy {
       this.navigationStateService.setConvocatoriaId(this.convocatoriaId);
       // Obtener el estado del proyecto desde el backend
       // this.obtenerEstadoProyecto();
+      console.log();
 
       // 🔹 Obtener la fase "Presentación de Propuestas"
       this.convocatoriaService
@@ -132,6 +153,14 @@ export class ProyectoComponent implements OnInit, OnDestroy {
         });
     }
     this.agregarEstudiante(); // Agregar un estudiante por defecto
+  }
+
+  updateCarreras(carrera: string): void {
+    const carre = carrera;
+
+    this.projectForm.value.carrera = carre;
+
+    console.log('Carrera:', this.projectForm.value.carrera);
   }
 
   // Lista de facultades con sus carreras
@@ -227,7 +256,15 @@ export class ProyectoComponent implements OnInit, OnDestroy {
   // -------------------------------------------
   //   VER DETALLE -> CARGAR EN EL FORM
   // -------------------------------------------
+  verDetalle: boolean = false;
+
+  //codigo_proyecto numero_resolucion
+
+  codigo_proyecto: any = null;
+  numero_resolucion: any = null;
   verDetalleProyecto(proyecto: any): void {
+    this.verDetalle = true;
+
     // Guardar el proyecto seleccionado (para mostrar su estado)
     this.proyectoSeleccionado = proyecto;
     this.estadoProyecto = proyecto.estado; // "enviado", "correcciones", etc.
@@ -239,6 +276,8 @@ export class ProyectoComponent implements OnInit, OnDestroy {
         console.log(data);
         // Parchear datos al form
         this.cargarFormularioConDatos(data);
+        this.codigo_proyecto = data.codigo_proyecto;
+        this.numero_resolucion = data.numero_resolucion;
 
         // 2. Cargar archivos de la fase "Presentación de Propuestas"
         //    (o si ya viene en data.archivos, filtrar)
@@ -252,6 +291,7 @@ export class ProyectoComponent implements OnInit, OnDestroy {
         console.log(data.estado_fase);
         this.editMode = data.estado === 'correcciones' && data.fase === 'Fase1';
         console.log(this.editMode);
+        this.updateCarreras(data.carrera);
       },
       error: (err) => {
         console.error('Error al obtener detalle del proyecto:', err);
@@ -259,39 +299,28 @@ export class ProyectoComponent implements OnInit, OnDestroy {
     });
   }
 
-  // -------------------------------------------
-  //   TOGGLE FORM (CORREGIR O READ-ONLY)
-  // -------------------------------------------
   cargarFormularioConDatos(data: any): void {
-    // Limpia arreglo de estudiantes
+    // Activar flag al iniciar la carga de datos
+    this.cargandoDatos = true;
+
+    // Limpia el arreglo de estudiantes
     this.estudiantes.clear();
 
-    // ======================================
-    // 1. Buscar Docente Coordinador en "miembros"
-    // ======================================
-    // El docente coordinador se identifica con el rol "profesor" (o "coordinador", según tu DB)
+    // 1. Buscar el docente coordinador en "miembros"
     const docenteMiembro = data.miembros?.find(
       (m: any) => m.role === 'profesor'
     );
-
-    // datos del docente (pueden provenir de m.detalles)
     const docenteDatos = docenteMiembro?.detalles || {};
 
-    // ======================================
-    // 2. Extraer Estudiantes
-    // ======================================
-    // Filtra miembros con rol "estudiante"
+    // 2. Extraer estudiantes
     const estudiantesMiembros =
       data.miembros?.filter((m: any) => m.role === 'estudiante') || [];
-
-    // Cada miembro de rol estudiante también tiene su info en la propiedad "detalles"
     const estudiantesData = estudiantesMiembros.map(
       (miembro: any) => miembro.detalles
     );
+    console.log(estudiantesData);
 
-    // ======================================
-    // 3. Parchear campos base del proyecto
-    // ======================================
+    // 3. Parchear los campos base del proyecto
     this.projectForm.patchValue({
       convocatoria_id: data.convocatoria_id || '',
       nombre: data.nombre || '',
@@ -302,10 +331,9 @@ export class ProyectoComponent implements OnInit, OnDestroy {
       parroquia: data.parroquia || '',
       oferta_academica: data.oferta_academica || '',
       facultad: data.facultad || '',
-      carrera: data.carrera || '',
+      // Inicialmente vaciamos la carrera para luego asignarla
+      carrera: '',
       modalidad: data.modalidad || '',
-
-      // Docente Coordinador (si no existe, se asignan cadenas vacías)
       docente_coordinador: {
         nombre: docenteDatos.nombre || '',
         apellido: docenteDatos.apellido || '',
@@ -315,10 +343,18 @@ export class ProyectoComponent implements OnInit, OnDestroy {
       },
     });
 
-    // ======================================
-    // 4. Llenar FormArray de Estudiantes
-    // ======================================
-    // cada "est" de estudiantesData tiene {nombre, apellido, cedula, genero, correo}
+    // 4. Actualizar las carreras disponibles según la facultad del proyecto
+    const facultadSeleccionada = this.facultades.find(
+      (f) => f.nombre === data.facultad
+    );
+    this.carrerasDisponibles = facultadSeleccionada
+      ? facultadSeleccionada.carreras
+      : [];
+
+    // 5. Finalmente, asignar la carrera correcta al formulario
+    this.projectForm.patchValue({ carrera: data.carrera || '' });
+
+    // 6. Llenar el FormArray de estudiantes
     estudiantesData.forEach((est: any) => {
       const estudianteForm = this.fb.group({
         nombre: [est?.nombre || '', Validators.required],
@@ -330,10 +366,11 @@ export class ProyectoComponent implements OnInit, OnDestroy {
       this.estudiantes.push(estudianteForm);
     });
 
-    // ======================================
-    // 5. Habilitar/deshabilitar el formulario según editMode
-    // ======================================
+    // 7. Habilitar o deshabilitar el formulario según el modo de edición
     this.toggleFormFields(!this.editMode);
+
+    // Desactivar flag una vez finalizada la carga
+    this.cargandoDatos = false;
   }
 
   toggleFormFields(enable: boolean): void {
@@ -381,7 +418,7 @@ export class ProyectoComponent implements OnInit, OnDestroy {
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       ];
-      const maxSize = 10 * 1024 * 1024; // 10 MB
+      const maxSize = 100 * 1024 * 1024; // 100 MB
 
       this.archivos = Array.from(input.files).filter((file) => {
         if (!allowedTypes.includes(file.type)) {
@@ -430,6 +467,10 @@ export class ProyectoComponent implements OnInit, OnDestroy {
   }
 
   private crearProyecto(formData: FormData): void {
+    if (this.archivos.length === 0) {
+      this.mostrarToast('❌ Debe seleccionar al menos un archivo.', false);
+      return;
+    }
     this.convocatoriaService.crearProyecto(formData).subscribe({
       next: () => {
         this.mostrarToast('✅ Proyecto registrado exitosamente.', true);
@@ -439,9 +480,15 @@ export class ProyectoComponent implements OnInit, OnDestroy {
         this.cargarProyectosDelProfesor();
         this.proyectoSeleccionado = null; // Ya no está seleccionando proyecto
         this.editMode = false;
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.mostrarToast('❌ Error al registrar el proyecto.', false);
+      error: (error) => {
+        // Se obtiene el mensaje de error desde el backend
+        const errorMsg =
+          error.error && error.error.message
+            ? error.error.error
+            : 'Error al registrar el proyecto.';
+        this.mostrarToast(errorMsg, false);
       },
     });
   }
@@ -455,6 +502,8 @@ export class ProyectoComponent implements OnInit, OnDestroy {
         this.cargarProyectosDelProfesor();
         this.proyectoSeleccionado = null;
         this.editMode = false;
+        this.cdr.detectChanges();
+        // window.location.reload();
       },
       error: () => {
         this.mostrarToast('❌ Error al actualizar el proyecto.', false);

@@ -15,7 +15,7 @@ export class ProyectosService {
    * Listar proyectos relacionados a una convocatoria específica
    * @param idConvocatoria ID de la convocatoria
    */
-  listarProyectosPorConvocatoria(idConvocatoria: number): Observable<any> {
+  listarProyectosPorConvocatoria(idConvocatoria: number): Observable<any> { 
     const headers = this.getAuthHeaders();
     return this.http.get(
       `${this.apiUrl}/convocatorias/${idConvocatoria}/proyectos`,
@@ -51,6 +51,29 @@ export class ProyectosService {
       { headers }
     );
   }
+  //subir datos tercera fase
+  subirDatosFase3(formData: FormData): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json', // Este encabezado sí se puede mantener
+    });
+
+    return this.http.post(`${this.apiUrl}/proyectos/subir-fase-3`, formData, {
+      headers,
+    });
+  }
+
+  finalizarProyectoFase3(projectId: number, formData: FormData): Observable<any> {
+  const token = localStorage.getItem('access_token');
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json'
+  });
+
+  return this.http.post(`${this.apiUrl}/proyectos/${projectId}/finalizar-fase-3`, formData, { headers });
+}
+
 
   /***********************************************************************************
    * Aprobar un proyecto y asignar código y número de resolución (ADMIN/REVISOR)
